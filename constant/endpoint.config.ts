@@ -1,0 +1,45 @@
+// export const apiPrefix = 'https://stockproapp.azurewebsites.net/api' //'https://stockproapp.azurewebsites.net/api'//'https://localhost:44337/api' //
+
+const endpointConfig = {
+    signIn: '/User/login',
+    signOut: '/sign-out',
+    signUp: '/User/register',
+    forgotPassword: '/forgot-password',
+    resetPassword: '/reset-password',
+    stocks: '/Stock',
+    details: '/Stock/details',
+    customers: '/Customer',
+    orders: '/Order',
+    Dashboard: '/Dashboard',
+    getAllOrders: '/Order/GetAllOrders',
+    salesChart: '/DashBoard/sales-chart?range=daily',
+    repairing: '/Reparing/send',
+    repairingList: '/Reparing/list',
+    InRepairinglist: '/Reparing/InRepairinglist',
+    repairingComplete: '/Reparing/complete',
+    repairingById: '/Reparing',
+    Invoices: '/Finance/user/summary',
+    customerInvoices: '/Finance/user/customer-summary',
+    supplierInvoices: '/Finance/user/supplier-summary',
+    customerPayments: '/Finance/customer/payment',
+    supplierPayments: '/Finance/supplier/payment',
+    DownloadPDFForSupplierInvoice: '/Invoice/download',
+    DownloadPDFForCustomerInvoice: '/Invoice/customer',
+    Supplier: '/supplier',
+    Product: '/product',
+    GetAllProduct: '/Product/GetAllProduct',
+    GetProductById: '/Product/GetById',
+    Return: '/return',
+    GetReturn: '/return/history',
+    Invoice: '/Invoice',
+    Expense: '/Expenses',
+    ExpenseCategories: '/ExpenseCategories',
+    Profile: '/Profile',
+    UploadImages: '/Upload/upload-images',
+    DeleteImage:'Upload/delete',
+    GetImages:'Upload',
+    User: '/User'
+
+}
+
+export default endpointConfig
