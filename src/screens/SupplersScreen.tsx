@@ -3,13 +3,46 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
+import ExcelLikeTable from 'UI/Tables/mainTable';
+import { useSuppliers } from 'Hooks/useSuppler';
 
-const ScreenA: React.FC = () => {
+const SupplersScreen: React.FC = () => {
+  const {
+    showSuccess,
+    handleInputChange,
+    handleSave,
+    isSubmitting,
+    formData,
+    errors,
+    pageSize,
+    setPageSize,
+    searchTerm,
+    setSearchTerm,
+    suppliers,
+    isLoading,
+    totalCount,
+    currentPage,
+    setCurrentPage,
+  } = useSuppliers()
+
+
+  const handleEdit = (entity: any) => {
+    console.log('Edit:', entity);
+  };
+
+  const handleView = (id: string) => {
+    console.log('View:', id);
+  };
+
+  const handleDelete = (id: string) => {
+    console.log('Delete:', id);
+  };
+
   return (
     <View style={styles.container}>
       <Header
-        title="Screen A"
-        subtitle="Analytics & Reports"
+        title="Supplers"
+        subtitle="Supplers List"
         showIcon={true}
         iconName="analytics"
         iconColor="#2196f3"
@@ -54,21 +87,16 @@ const ScreenA: React.FC = () => {
           </View>
         </View>
 
-        {/* Feature List */}
-        <Text style={styles.sectionTitle}>
-          Key Features
-        </Text>
-
-        <View style={styles.featureList}>
-          {['Real-time market data analysis', 'Advanced charting tools', 'Custom report generation', 'Performance tracking'].map((feature, index) => (
-            <View key={index} style={[styles.featureItem, index < 3 && styles.featureItemMb]}>
-              <Icon name="checkmark-circle" size={24} color="#4caf50" />
-              <Text style={styles.featureText}>
-                {feature}
-              </Text>
-            </View>
-          ))}
-        </View>
+        <ExcelLikeTable
+          data={suppliers}
+          showStatus={true}
+          showButton={true}
+          showButtonNavigation={true}
+          showDelBtn={true}
+          onEdit={handleEdit}
+          handleViewDetails={handleView}
+          handleDeleteStock={handleDelete}
+        />
 
         {/* Info Card */}
         <View style={styles.infoCard}>
@@ -208,4 +236,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScreenA;
+export default SupplersScreen;

@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DashboardScreen from '../screens/DashboardScreen';
-import ScreenA from '../screens/ScreenA';
+import ScreenA from '../screens/SupplersScreen';
 import ScreenB from '../screens/ScreenB';
 import ScreenC from '../screens/ScreenC';
 

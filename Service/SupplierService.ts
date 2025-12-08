@@ -1,6 +1,5 @@
+import endpointConfig from 'constant/endpoint.config'
 import ApiService from './ApiService'
-import endpointConfig from '@/configs/endpoint.config'
-import { Supplier } from '@/@types/interface'
 
 export async function getSupplier(pageNumber = 1, pageSize = 10, searchTerm?: string) {
     const params = new URLSearchParams({
@@ -18,7 +17,7 @@ export async function getSupplier(pageNumber = 1, pageSize = 10, searchTerm?: st
     })
 }
 
-export async function createSupplier(supplier: Supplier) {
+export async function createSupplier(supplier: any) {
     return ApiService.fetchDataWithAxios({
         url: endpointConfig.Supplier,
         method: 'post',
