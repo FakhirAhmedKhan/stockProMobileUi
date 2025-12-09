@@ -1,10 +1,12 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Header from '../components/Header';
-import ExcelLikeTable from 'UI/Tables/mainTable';
+import { SupplierFormInputs } from '@/components/Forms/SupplierFormInputs';
+import { MainHeader } from '@/components/MainHeader';
+import ExcelLikeTable from '@/components/mainTable';
+import { SupplierModalForm } from '@/components/Models/Suppliers.Model';
+import { Pagination } from '@/components/Pagination';
+import SearchBar from '@/components/SearchBar';
 import { useSuppliers } from 'Hooks/useSuppler';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 const SupplersScreen: React.FC = () => {
   const {
@@ -38,55 +40,27 @@ const SupplersScreen: React.FC = () => {
     console.log('Delete:', id);
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <View style={styles.container}>
-      <Header
-        title="Supplers"
-        subtitle="Supplers List"
-        showIcon={true}
-        iconName="analytics"
-        iconColor="#2196f3"
-      />
-
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Hero Section */}
-        <LinearGradient
-          colors={['#3b82f6', '#2563eb']} // blue-500 to blue-600
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.heroSection}
-        >
-          <View style={styles.heroHeader}>
-            <Icon name="bar-chart" size={40} color="#fff" />
-            <Text style={styles.heroTitle}>
-              Analytics Dashboard
-            </Text>
-          </View>
-          <Text style={styles.heroDescription}>
-            View comprehensive analytics and detailed reports for your trading
-            activities.
-          </Text>
-        </LinearGradient>
 
-        {/* Stats Cards */}
-        <View style={styles.statsContainer}>
-          <View style={[styles.statCard, { marginRight: 8 }]}>
-            <Icon name="trending-up" size={24} color="#4caf50" />
-            <Text style={styles.statValue}>
-              +24.5%
-            </Text>
-            <Text style={styles.statLabel}>Growth</Text>
-          </View>
-
-          <View style={[styles.statCard, { marginLeft: 8 }]}>
-            <Icon name="wallet" size={24} color="#2196f3" />
-            <Text style={styles.statValue}>
-              $12,450
-            </Text>
-            <Text style={styles.statLabel}>Portfolio</Text>
-          </View>
-        </View>
-
+        <MainHeader
+          H1Heading="Dashboard Overview"
+          Paragraph="Monitor your business metrics and performance in real-time"
+          BtnText="Add New Item"
+          Updates="5 Updates Today"
+          StutsUpdates="System Active"
+          fullName="John Doe"
+          setIsModalOpen={setIsModalOpen}
+          showButton={true}
+          showRangePicker={false}
+        />
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
         <ExcelLikeTable
           data={suppliers}
           showStatus={true}
@@ -98,22 +72,38 @@ const SupplersScreen: React.FC = () => {
           handleDeleteStock={handleDelete}
         />
 
-        {/* Info Card */}
-        <View style={styles.infoCard}>
-          <View style={styles.infoContent}>
-            <Icon name="information-circle" size={24} color="#2196f3" />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>
-                Pro Tip
-              </Text>
-              <Text style={styles.infoDescription}>
-                Use the analytics dashboard to identify trends and make
-                data-driven trading decisions. Review your reports weekly for
-                best results.
-              </Text>
-            </View>
+        {isModalOpen && (
+          <View style={{ padding: 20 }}>
+            <SupplierModalForm
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              showSuccess={showSuccess}
+              handleSave={handleSave}
+              isSubmitting={isSubmitting}
+              formData={formData}
+              errors={errors}
+              handleInputChange={handleInputChange}
+              H2Title="Add Supplier"
+              showSuccessText="Supplier added successfully!"
+            >
+              <SupplierFormInputs
+                formData={formData}
+                errors={errors}
+                handleInputChange={handleInputChange}
+              />
+            </SupplierModalForm>
           </View>
-        </View>
+        )}
+
+        <Pagination
+          pageNumber={currentPage}
+          setPageNumber={setCurrentPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          totalPages={Math.ceil(totalCount / pageSize)}
+          text="Items per page"
+        />
+
       </ScrollView>
     </View>
   );

@@ -13,7 +13,7 @@ export const useDebounce = (value: string, delay: number) => {
 export const PHONE_REGEX = /^\+?[1-9]\d{1,14}$/
 export const defaultFormData = {
     name: '',
-    email: 'sss@dsds',
+    email: '',
     phoneNumber: '',
     activeStatus: true,
 }

@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react'
-import { defaultFormData, SupplierApiResponse, useDebounce } from './useDebounce'
 import { Supplier } from '@/@types/interface'
+import { useCallback, useEffect, useState } from 'react'
+import { getUserId } from '../Service/AuthService'
 import { createSupplier, getSupplier } from '../Service/SupplierService'
+import { defaultFormData, SupplierApiResponse, useDebounce } from './useDebounce'
 
 export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s: Supplier) => void) {
 
@@ -53,7 +54,8 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
     const handleSave = useCallback(async () => {
         try {
             setIsSubmitting(true)
-            const newSupplier: Supplier = { ...formData }
+            const userId = await getUserId();
+            const newSupplier: Supplier = { ...formData, userId }
             await createSupplier(newSupplier)
             await fetchSuppliers()
             onSave?.(newSupplier)
@@ -62,7 +64,8 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
                 setShowSuccess(false)
                 onClose?.()
             }, 3000)
-        } catch {
+        } catch (error: any) {
+            console.error("Save Error:", error.response?.data || error);
             setErrors({ submit: "Failed to save supplier. Please try again." })
         } finally {
             setIsSubmitting(false)

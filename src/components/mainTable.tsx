@@ -105,20 +105,6 @@ const ExcelLikeTable = ({
 
   return (
     <View style={styles.container}>
-      {/* Orientation Toggle Button */}
-      <View style={styles.headerControls}>
-        <TouchableOpacity
-          style={styles.rotateButton}
-          onPress={toggleOrientation}
-          activeOpacity={0.7}
-        >
-          <RotateIcon />
-          <Text style={styles.rotateButtonText}>
-            {isLandscape ? 'Portrait' : 'Landscape'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Table Container */}
       <ScrollView
         horizontal

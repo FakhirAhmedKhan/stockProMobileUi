@@ -3,7 +3,7 @@
  * Handles user authentication operations
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TOKEN_NAME_IN_STORAGE } from '../constant/api.constant';
+import { TOKEN_NAME_IN_STORAGE, USER_ID_IN_STORAGE } from '../constant/api.constant';
 import endpointConfig from '../constant/endpoint.config';
 import { resetToLogin } from '../src/navigation/NavigationService';
 import ApiService from './ApiService';
@@ -44,6 +44,9 @@ export const login = async (
 
         if (response && response.token) {
             await AsyncStorage.setItem(TOKEN_NAME_IN_STORAGE, response.token);
+            if (response.user && response.user.id) {
+                await AsyncStorage.setItem(USER_ID_IN_STORAGE, response.user.id);
+            }
 
             return {
                 ...response,
@@ -72,6 +75,7 @@ export const login = async (
 export const logout = async (): Promise<void> => {
     try {
         await AsyncStorage.removeItem(TOKEN_NAME_IN_STORAGE);
+        await AsyncStorage.removeItem(USER_ID_IN_STORAGE);
         resetToLogin();
     } catch (error) {
         console.error('Logout error:', error);
@@ -84,4 +88,13 @@ export const logout = async (): Promise<void> => {
 export const isAuthenticated = (): boolean => {
     // In a real app, you would check for valid token
     return false;
+};
+
+export const getUserId = async (): Promise<string | null> => {
+    try {
+        return await AsyncStorage.getItem(USER_ID_IN_STORAGE);
+    } catch (error) {
+        console.error('Error getting user ID:', error);
+        return null;
+    }
 };
