@@ -4,7 +4,7 @@ import ExcelLikeTable from '@/components/mainTable';
 import { SupplierModalForm } from '@/components/Models/Suppliers.Model';
 import { Pagination } from '@/components/Pagination';
 import SearchBar from '@/components/SearchBar';
-import { useSuppliers } from 'Hooks/useSuppler';
+import { useSuppliers } from 'Hooks/useSuppliers';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 

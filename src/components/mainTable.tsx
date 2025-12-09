@@ -1,17 +1,3 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  Platform,
-} from 'react-native';
-
-// Mock icon components (replace with react-native-vector-icons in real app)
-const Edit2Icon = () => <Text style={styles.icon}>✏️</Text>;
-const EyeIcon = () => <Text style={styles.icon}>👁️</Text>;
 const DeleteIcon = () => <Text style={styles.icon}>🗑️</Text>;
 const CheckCircleIcon = () => <Text style={styles.iconSmall}>✅</Text>;
 const XCircleIcon = () => <Text style={styles.iconSmall}>❌</Text>;
@@ -77,15 +63,15 @@ const ExcelLikeTable = ({
   // Merge logic (optional)
   const mergedData = mergeSameRows && mergeKey
     ? data.reduce((acc, curr) => {
-        const last = acc[acc.length - 1];
-        if (last && last[mergeKey] === curr[mergeKey]) {
-          last._rowspan = (last._rowspan || 1) + 1;
-          curr._hide = true;
-        } else {
-          acc.push(curr);
-        }
-        return acc;
-      }, [])
+      const last = acc[acc.length - 1];
+      if (last && last[mergeKey] === curr[mergeKey]) {
+        last._rowspan = (last._rowspan || 1) + 1;
+        curr._hide = true;
+      } else {
+        acc.push(curr);
+      }
+      return acc;
+    }, [])
     : data;
 
   // Format column header
@@ -102,6 +88,114 @@ const ExcelLikeTable = ({
   const screenWidth = Dimensions.get('window').width;
   const baseColumnWidth = isLandscape ? 120 : 100;
   const actionColumnWidth = 120;
+
+  const renderRow = ({ item: entity, index: i }: { item: any; index: number }) => {
+    if (entity._hide) return null;
+
+    return (
+      <View
+        style={[
+          styles.tableRow,
+          i % 2 === 0 ? styles.evenRow : styles.oddRow,
+        ]}
+      >
+        {validColumns.map((col, idx) => (
+          <View
+            key={idx}
+            style={[styles.cell, { width: baseColumnWidth }]}
+          >
+            <Text style={styles.cellText} numberOfLines={3}>
+              {entity[col] ?? '-'}
+            </Text>
+          </View>
+        ))}
+
+        {/* Status Badge */}
+        {showStatus && (
+          <View style={[styles.cell, { width: baseColumnWidth }]}>
+            <View
+              style={[
+                styles.statusBadge,
+                entity[statusKey]
+                  ? styles.statusActive
+                  : styles.statusInactive,
+              ]}
+            >
+              {entity[statusKey] ? (
+                <CheckCircleIcon />
+              ) : (
+                <XCircleIcon />
+              )}
+              <Text
+                style={[
+                  styles.statusText,
+                  entity[statusKey]
+                    ? styles.statusTextActive
+                    : styles.statusTextInactive,
+                ]}
+              >
+                {entity[statusKey] ? 'Active' : 'Inactive'}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Edit Button */}
+        {showButton && (
+          <View style={[styles.cell, { width: actionColumnWidth }]}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                setIsModalOpen?.(true);
+                onEdit?.(entity);
+              }}
+              activeOpacity={0.7}
+            >
+              <Edit2Icon />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* View & Delete Buttons */}
+        {showButtonNavigation && (
+          <View style={[styles.cell, { width: actionColumnWidth }]}>
+            <View style={styles.actionGroup}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() =>
+                  handleViewDetails?.(
+                    entity.id ||
+                    entity.stockId ||
+                    entity.productId ||
+                    entity
+                  )
+                }
+                activeOpacity={0.7}
+              >
+                <EyeIcon />
+              </TouchableOpacity>
+              {showDelBtn && (
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.deleteButton]}
+                  onPress={() =>
+                    handleDeleteStock?.(
+                      entity.id ||
+                      entity.stockId ||
+                      entity.productId ||
+                      entity
+                    )
+                  }
+                  activeOpacity={0.7}
+                >
+                  <DeleteIcon />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -142,118 +236,17 @@ const ExcelLikeTable = ({
             )}
           </View>
 
-          {/* Table Body */}
-          <ScrollView
+          {/* Table Body using FlatList */}
+          <FlatList
+            data={mergedData}
+            renderItem={renderRow}
+            keyExtractor={(item, index) => item.id || index.toString()}
             style={styles.verticalScroll}
             showsVerticalScrollIndicator={true}
-          >
-            {mergedData.map((entity: any, i: number) =>
-              entity._hide ? null : (
-                <View
-                  key={i}
-                  style={[
-                    styles.tableRow,
-                    i % 2 === 0 ? styles.evenRow : styles.oddRow,
-                  ]}
-                >
-                  {validColumns.map((col, idx) => (
-                    <View
-                      key={idx}
-                      style={[styles.cell, { width: baseColumnWidth }]}
-                    >
-                      <Text style={styles.cellText} numberOfLines={3}>
-                        {entity[col] ?? '-'}
-                      </Text>
-                    </View>
-                  ))}
-
-                  {/* Status Badge */}
-                  {showStatus && (
-                    <View style={[styles.cell, { width: baseColumnWidth }]}>
-                      <View
-                        style={[
-                          styles.statusBadge,
-                          entity[statusKey]
-                            ? styles.statusActive
-                            : styles.statusInactive,
-                        ]}
-                      >
-                        {entity[statusKey] ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <XCircleIcon />
-                        )}
-                        <Text
-                          style={[
-                            styles.statusText,
-                            entity[statusKey]
-                              ? styles.statusTextActive
-                              : styles.statusTextInactive,
-                          ]}
-                        >
-                          {entity[statusKey] ? 'Active' : 'Inactive'}
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Edit Button */}
-                  {showButton && (
-                    <View style={[styles.cell, { width: actionColumnWidth }]}>
-                      <TouchableOpacity
-                        style={styles.actionButton}
-                        onPress={() => {
-                          setIsModalOpen?.(true);
-                          onEdit?.(entity);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <Edit2Icon />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-
-                  {/* View & Delete Buttons */}
-                  {showButtonNavigation && (
-                    <View style={[styles.cell, { width: actionColumnWidth }]}>
-                      <View style={styles.actionGroup}>
-                        <TouchableOpacity
-                          style={styles.actionButton}
-                          onPress={() =>
-                            handleViewDetails?.(
-                              entity.id ||
-                                entity.stockId ||
-                                entity.productId ||
-                                entity
-                            )
-                          }
-                          activeOpacity={0.7}
-                        >
-                          <EyeIcon />
-                        </TouchableOpacity>
-                        {showDelBtn && (
-                          <TouchableOpacity
-                            style={[styles.actionButton, styles.deleteButton]}
-                            onPress={() =>
-                              handleDeleteStock?.(
-                                entity.id ||
-                                  entity.stockId ||
-                                  entity.productId ||
-                                  entity
-                              )
-                            }
-                            activeOpacity={0.7}
-                          >
-                            <DeleteIcon />
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    </View>
-                  )}
-                </View>
-              )
-            )}
-          </ScrollView>
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+          />
         </View>
       </ScrollView>
     </View>
@@ -275,22 +268,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#6b7280',
-    fontWeight: '500',
-  },
-  headerControls: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginBottom: 12,
-  },
-  rotateButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#8b5cf6',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

@@ -1,14 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BarChart3, LayoutDashboard, Settings, Users } from 'lucide-react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
 import DashboardScreen from '../screens/DashboardScreen';
-import ScreenA from '../screens/SupplersScreen';
 import ScreenB from '../screens/ScreenB';
 import ScreenC from '../screens/ScreenC';
+import SuppliersScreen from '../screens/SuppliersScreen';
 
 export type DashboardTabParamList = {
   DashboardHome: undefined;
-  ScreenA: undefined;
+  Suppliers: undefined;
   ScreenB: undefined;
   ScreenC: undefined;
 };
@@ -21,19 +21,16 @@ const DashboardNavigator: React.FC = () => {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: string = 'home';
-
           if (route.name === 'DashboardHome') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'ScreenA') {
-            iconName = focused ? 'analytics' : 'analytics-outline';
+            return <LayoutDashboard size={size} color={color} />;
+          } else if (route.name === 'Suppliers') {
+            return <Users size={size} color={color} />;
           } else if (route.name === 'ScreenB') {
-            iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+            return <BarChart3 size={size} color={color} />;
           } else if (route.name === 'ScreenC') {
-            iconName = focused ? 'settings' : 'settings-outline';
+            return <Settings size={size} color={color} />;
           }
-
-          return <Icon name={iconName} size={size} color={color} />;
+          return null;
         },
         tabBarActiveTintColor: '#2196f3',
         tabBarInactiveTintColor: '#9e9e9e',
@@ -59,10 +56,10 @@ const DashboardNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="ScreenA"
-        component={ScreenA}
+        name="Suppliers"
+        component={SuppliersScreen}
         options={{
-          tabBarLabel: 'Analytics',
+          tabBarLabel: 'Suppliers',
         }}
       />
       <Tab.Screen
