@@ -1,7 +1,7 @@
 import { Supplier } from '@/@types/interface'
-import { useCallback, useEffect, useState } from 'react'
-import { getUserId } from '../Service/AuthService'
-import { createSupplier, getSupplier } from '../Service/SupplierService'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { getUserId } from '@/services/AuthService'
+import { createSupplier, getSupplier } from '@/services/SupplierService'
 import { defaultFormData, SupplierApiResponse, useDebounce } from './useDebounce'
 
 export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s: Supplier) => void) {
@@ -16,6 +16,9 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [showSuccess, setShowSuccess] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Safety: Track timeout to clear it if component unmounts
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const debouncedSearch = useDebounce(searchTerm, 300)
 
@@ -60,7 +63,9 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
             await fetchSuppliers()
             onSave?.(newSupplier)
             setShowSuccess(true)
-            setTimeout(() => {
+
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => {
                 setShowSuccess(false)
                 onClose?.()
             }, 3000)
@@ -74,6 +79,10 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
 
     useEffect(() => {
         fetchSuppliers()
+        // Cleanup timeout on unmount
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [fetchSuppliers])
 
     useEffect(() => {

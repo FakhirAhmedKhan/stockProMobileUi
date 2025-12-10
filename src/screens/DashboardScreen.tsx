@@ -3,13 +3,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { logout } from '../../Service/AuthService';
+import { logout } from '@/services/AuthService';
 import Button from '../components/Button';
 import Header from '../components/Header';
 
 type DashboardStackParamList = {
   DashboardHome: undefined;
-  ScreenA: undefined;
+  Suppliers: undefined;
   ScreenB: undefined;
   ScreenC: undefined;
 };
@@ -94,22 +94,22 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
           Explore Screens
         </Text>
 
-        {/* Screen A Card */}
+        {/* Suppliers Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
-              <Icon name="analytics" size={28} color="#2196f3" />
+              <Icon name="people" size={28} color="#2196f3" />
             </View>
             <View style={styles.cardHeaderText}>
-              <Text style={styles.cardTitle}>Screen A</Text>
+              <Text style={styles.cardTitle}>Suppliers</Text>
               <Text style={styles.cardSubtitle}>
-                Analytics & Reports
+                Manage Inventory & Partners
               </Text>
             </View>
           </View>
           <Button
-            title="Open Screen A"
-            onPress={() => navigateToScreen('ScreenA')}
+            title="Open Suppliers"
+            onPress={() => navigateToScreen('Suppliers')}
             variant="primary"
           />
         </View>

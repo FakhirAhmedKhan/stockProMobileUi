@@ -3,9 +3,9 @@
  * Handles user authentication operations
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TOKEN_NAME_IN_STORAGE, USER_ID_IN_STORAGE } from '../constant/api.constant';
-import endpointConfig from '../constant/endpoint.config';
-import { resetToLogin } from '../src/navigation/NavigationService';
+import { TOKEN_NAME_IN_STORAGE, USER_ID_IN_STORAGE } from '@/constants/api.constant';
+import endpointConfig from '@/constants/endpoint.config';
+import { resetToLogin } from '@/navigation/NavigationService';
 import ApiService from './ApiService';
 
 export interface LoginCredentials {

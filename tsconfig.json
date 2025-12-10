@@ -30,7 +30,19 @@
         "src/navigation/*"
       ],
       "@services/*": [
-        "Service/*"
+        "src/services/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
+      ],
+      "@constants/*": [
+        "src/constants/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "Hooks/*": [
+        "src/hooks/*"
       ]
     }
   },
@@ -38,7 +50,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
   ],
   "exclude": [
     "node_modules"

@@ -5,8 +5,8 @@ import {
     REQUEST_HEADER_AUTH_KEY,
     TOKEN_NAME_IN_STORAGE,
     TOKEN_TYPE,
-} from "../../constant/api.constant";
-import appConfig from "../../constant/app.config";
+} from "@/constants/api.constant";
+import appConfig from "@/constants/app.config";
 
 const AxiosRequestInterceptorConfigCallback = async (
     config: InternalAxiosRequestConfig,

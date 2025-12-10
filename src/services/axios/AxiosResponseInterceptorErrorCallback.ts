@@ -1,6 +1,6 @@
 import type { AxiosError } from 'axios';
 
-import { resetToLogin } from '../../src/navigation/NavigationService';
+import { resetToLogin } from '@/navigation/NavigationService';
 
 const AxiosResponseInterceptorErrorCallback = (error: AxiosError) => {
     console.error('Axios Response Error:', error)

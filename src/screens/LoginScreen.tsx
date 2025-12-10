@@ -12,8 +12,8 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { login } from '../../Service/AuthService';
-import Button from '../components/Button';
+import { login } from '@/services/AuthService';
+import Button from '@/components/Button';
 
 type RootStackParamList = {
   Auth: undefined;
