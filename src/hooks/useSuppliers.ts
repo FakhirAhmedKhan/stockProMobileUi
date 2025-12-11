@@ -1,7 +1,7 @@
-import { Supplier } from '@/@types/interface'
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { getUserId } from '@/services/AuthService'
 import { createSupplier, getSupplier } from '@/services/SupplierService'
+import { Supplier } from '@/types/interface'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { defaultFormData, SupplierApiResponse, useDebounce } from './useDebounce'
 
 export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s: Supplier) => void) {
@@ -16,9 +16,10 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [showSuccess, setShowSuccess] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [fetchError, setFetchError] = useState<string | null>(null)
 
     // Safety: Track timeout to clear it if component unmounts
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const debouncedSearch = useDebounce(searchTerm, 300)
 
@@ -42,13 +43,15 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
 
     const fetchSuppliers = useCallback(async () => {
         setIsLoading(true)
+        setFetchError(null)
         try {
-            const d: SupplierApiResponse = await getSupplier(currentPage, pageSize, debouncedSearch)
+            const d = await getSupplier(currentPage, pageSize, debouncedSearch) as SupplierApiResponse
             const list = d.suppliers || d.items || []
             setSuppliers(list)
             setTotalCount(d.totalCount ?? list.length)
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to fetch suppliers:", err)
+            setFetchError(err?.message || 'Failed to load suppliers')
         } finally {
             setIsLoading(false)
         }
@@ -78,9 +81,14 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
     }, [formData, fetchSuppliers, onSave, onClose])
 
     useEffect(() => {
-        fetchSuppliers()
-        // Cleanup timeout on unmount
+        let isActive = true
+        const load = async () => {
+            if (!isActive) return
+            await fetchSuppliers()
+        }
+        load()
         return () => {
+            isActive = false
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
         };
     }, [fetchSuppliers])
@@ -107,6 +115,7 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
         setSearchTerm,
         suppliers,
         isLoading,
+        fetchError,
         totalCount,
         currentPage,
         setCurrentPage,

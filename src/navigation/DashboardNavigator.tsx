@@ -32,12 +32,12 @@ const DashboardNavigator: React.FC = () => {
           }
           return null;
         },
-        tabBarActiveTintColor: '#2196f3',
-        tabBarInactiveTintColor: '#9e9e9e',
+        tabBarActiveTintColor: '#3b82f6', // blue-500
+        tabBarInactiveTintColor: '#9ca3af', // gray-400
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
+          borderTopColor: '#e5e7eb', // gray-200
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,

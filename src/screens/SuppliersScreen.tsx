@@ -4,11 +4,11 @@ import { MainHeader } from '@/components/MainHeader';
 import { SupplierModalForm } from '@/components/Models/Suppliers.Model';
 import { Pagination } from '@/components/Pagination';
 import SearchBar from '@/components/SearchBar';
-import { useSuppliers } from 'Hooks/useSuppliers';
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import { useSuppliers } from '@/hooks/useSuppliers';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-const SupplersScreen: React.FC = () => {
+const SuppliersScreen: React.FC = () => {
   const {
     showSuccess,
     handleInputChange,
@@ -22,25 +22,30 @@ const SupplersScreen: React.FC = () => {
     setSearchTerm,
     suppliers,
     isLoading,
+    fetchError,
     totalCount,
     currentPage,
     setCurrentPage,
   } = useSuppliers();
 
-
-  const handleEdit = (entity: any) => {
+  const handleEdit = useCallback((entity: any) => {
     console.log('Edit:', entity);
-  };
+  }, []);
 
-  const handleView = (id: string) => {
+  const handleView = useCallback((id: string) => {
     console.log('View:', id);
-  };
+  }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     console.log('Delete:', id);
-  };
+  }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(totalCount / pageSize)),
+    [totalCount, pageSize]
+  );
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -63,16 +68,33 @@ const SupplersScreen: React.FC = () => {
       </View>
 
       <View className="flex-1 px-6 pt-4">
-        <ExcelLikeTable
-          data={suppliers}
-          showStatus={true}
-          showButton={true}
-          showButtonNavigation={true}
-          showDelBtn={true}
-          onEdit={handleEdit}
-          handleViewDetails={handleView}
-          handleDeleteStock={handleDelete}
-        />
+        {isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#3b82f6" />
+            <Text className="text-gray-500 mt-3">Loading suppliers...</Text>
+          </View>
+        ) : fetchError ? (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-red-600 text-base text-center px-4">
+              {fetchError}
+            </Text>
+          </View>
+        ) : suppliers.length === 0 ? (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-gray-500 text-base">No suppliers found</Text>
+          </View>
+        ) : (
+          <ExcelLikeTable
+            data={suppliers}
+            showStatus={true}
+            showButton={true}
+            showButtonNavigation={true}
+            showDelBtn={true}
+            onEdit={handleEdit}
+            handleViewDetails={handleView}
+            handleDeleteStock={handleDelete}
+          />
+        )}
       </View>
 
       {isModalOpen && (
@@ -104,7 +126,7 @@ const SupplersScreen: React.FC = () => {
           setPageNumber={setCurrentPage}
           pageSize={pageSize}
           setPageSize={setPageSize}
-          totalPages={Math.ceil(totalCount / pageSize)}
+          totalPages={totalPages}
           text="Items per page"
         />
       </View>
@@ -113,4 +135,4 @@ const SupplersScreen: React.FC = () => {
   );
 };
 
-export default SupplersScreen;
+export default SuppliersScreen;

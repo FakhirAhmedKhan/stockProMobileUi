@@ -1,6 +1,6 @@
+import endpointConfig from '@/constants/endpoint.config'
+import { Customer } from '@/types/interface'
 import ApiService from './ApiService'
-import endpointConfig from '@/configs/endpoint.config'
-import { Customer } from '@/@types/interface'
 
 export async function getCustomers(
     pageNumber = 1,

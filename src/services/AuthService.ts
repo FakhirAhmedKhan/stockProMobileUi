@@ -2,10 +2,10 @@
  * Authentication Service
  * Handles user authentication operations
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOKEN_NAME_IN_STORAGE, USER_ID_IN_STORAGE } from '@/constants/api.constant';
 import endpointConfig from '@/constants/endpoint.config';
 import { resetToLogin } from '@/navigation/NavigationService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiService from './ApiService';
 
 export interface LoginCredentials {
@@ -36,29 +36,29 @@ export const login = async (
         const response = await ApiService.fetchDataWithAxios<AuthResponse>({
             url: endpointConfig.signIn,
             method: 'post',
-            data: {
-                email: email,
-                password: password,
-            },
+            data: { email, password },
         });
 
-        if (response && response.token) {
-            await AsyncStorage.setItem(TOKEN_NAME_IN_STORAGE, response.token);
-            if (response.user && response.user.id) {
-                await AsyncStorage.setItem(USER_ID_IN_STORAGE, response.user.id);
-            }
+        const token = response?.token;
+        const userId = response?.user?.id;
 
-            return {
-                ...response,
-                success: true,
-                message: response.message || 'Login successful',
-            };
-        } else {
+        if (!token) {
             return {
                 success: false,
-                message: response.message || 'Login failed',
+                message: response?.message || 'Login failed',
             };
         }
+
+        await AsyncStorage.setItem(TOKEN_NAME_IN_STORAGE, token);
+        if (userId) {
+            await AsyncStorage.setItem(USER_ID_IN_STORAGE, userId);
+        }
+
+        return {
+            ...response,
+            success: true,
+            message: response?.message || 'Login successful',
+        };
 
     } catch (error: any) {
         console.error('Login error:', error);
@@ -85,9 +85,14 @@ export const logout = async (): Promise<void> => {
 /**
  * Check if user is authenticated
  */
-export const isAuthenticated = (): boolean => {
-    // In a real app, you would check for valid token
-    return false;
+export const isAuthenticated = async (): Promise<boolean> => {
+    try {
+        const token = await AsyncStorage.getItem(TOKEN_NAME_IN_STORAGE);
+        return !!token;
+    } catch (error) {
+        console.error('Auth check error:', error);
+        return false;
+    }
 };
 
 export const getUserId = async (): Promise<string | null> => {

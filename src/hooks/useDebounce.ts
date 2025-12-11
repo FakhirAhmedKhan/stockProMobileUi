@@ -1,4 +1,4 @@
-import { Customer, Supplier } from '@/@types/interface'
+import { Customer, Supplier } from '@/types/interface'
 import { useEffect, useState } from 'react'
 
 export const useDebounce = (value: string, delay: number) => {

@@ -1,12 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { InternalAxiosRequestConfig } from 'axios';
-import { Platform } from 'react-native';
 import {
     REQUEST_HEADER_AUTH_KEY,
     TOKEN_NAME_IN_STORAGE,
     TOKEN_TYPE,
 } from "@/constants/api.constant";
 import appConfig from "@/constants/app.config";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { InternalAxiosRequestConfig } from 'axios';
+import { Platform } from 'react-native';
 
 const AxiosRequestInterceptorConfigCallback = async (
     config: InternalAxiosRequestConfig,
@@ -52,18 +52,14 @@ const AxiosRequestInterceptorConfigCallback = async (
         }
     }
 
-    // ✅ Inject Authorization header
+    // ✅ Inject Authorization header (TOKEN_TYPE already includes trailing space)
     if (accessToken) {
-        config.headers[REQUEST_HEADER_AUTH_KEY] = `${TOKEN_TYPE} ${accessToken}`;
+        config.headers[REQUEST_HEADER_AUTH_KEY] = `${TOKEN_TYPE}${accessToken}`;
     }
 
-    // ✅ Inject userId safely without breaking FormData
-    if (config.method === 'post' && config.data) {
-        if (config.data instanceof FormData) {
-            config.data.append('userId', userId);
-        } else if (typeof config.data === 'object' && config.data !== null) {
-            config.data = { ...config.data, userId };
-        }
+    // ✅ Send user id via header to avoid mutating payloads
+    if (userId) {
+        config.headers['x-user-id'] = userId;
     }
 
     return config;

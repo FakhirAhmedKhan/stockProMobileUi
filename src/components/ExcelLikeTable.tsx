@@ -4,7 +4,6 @@ import {
   FlatList,
   ListRenderItem,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -13,7 +12,7 @@ import {
 // --- Types ---
 interface TableEntity {
   id: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined; // More strict than 'any'
 }
 
 interface ExcelLikeTableProps {
@@ -28,27 +27,21 @@ interface ExcelLikeTableProps {
   showStatus?: boolean;
   statusKey?: string;
   columnsToHide?: string[];
-  mergeSameRows?: boolean; // Kept for compatibility, though implementation simplified
-  mergeKey?: string;       // Kept for compatibility
+  mergeSameRows?: boolean;
+  mergeKey?: string;
 }
 
 // --- Constants ---
 const BASE_COL_WIDTH = 120;
 const ACTION_COL_WIDTH = 120;
-const THEME = {
-  primary: '#8b5cf6',
-  primaryBorder: '#7c3aed',
-  bg: '#f8f9fa',
-  white: '#ffffff',
-  text: '#374151',
-  dangerBg: '#fef2f2',
-  dangerBorder: '#fca5a5',
-};
 
-// --- Sub-Components (Performance Optimization) ---
-
-const ActionButton = ({ onPress, style, children }: { onPress: () => void, style?: any, children: React.ReactNode }) => (
-  <TouchableOpacity style={[styles.actionButton, style]} onPress={onPress} activeOpacity={0.7}>
+// --- Sub-Components ---
+const ActionButton = ({ onPress, className, children }: { onPress: () => void, className?: string, children: React.ReactNode }) => (
+  <TouchableOpacity
+    className={`border border-gray-200 rounded-lg p-2 items-center justify-center bg-white ${className}`}
+    onPress={onPress}
+    activeOpacity={0.7}
+  >
     {children}
   </TouchableOpacity>
 );
@@ -70,20 +63,23 @@ const TableRow = React.memo(({
   } = props;
 
   const isActive = item[statusKey];
+  const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
 
   return (
-    <View style={[styles.tableRow, index % 2 === 0 ? styles.evenRow : styles.oddRow]}>
+    <View className={`flex-row border-b border-gray-200 ${rowBg}`}>
       {validColumns.map((col, idx) => (
-        <View key={`${item.id}-${col}-${idx}`} style={[styles.cell, { width: BASE_COL_WIDTH }]}>
-          <Text style={styles.cellText} numberOfLines={3}>{item[col] ?? '-'}</Text>
+        <View key={`${item.id}-${col}`} className="p-3 justify-center border-r border-gray-200" style={{ width: BASE_COL_WIDTH }}>
+          <Text className="text-sm text-gray-700 text-center" numberOfLines={3}>
+            {String(item[col] ?? '-')}
+          </Text>
         </View>
       ))}
 
       {showStatus && (
-        <View style={[styles.cell, { width: BASE_COL_WIDTH }]}>
-          <View style={[styles.statusBadge, isActive ? styles.statusActive : styles.statusInactive]}>
+        <View className="p-3 justify-center border-r border-gray-200" style={{ width: BASE_COL_WIDTH }}>
+          <View className={`flex-row items-center px-3 py-1.5 rounded-full self-center gap-1 ${isActive ? 'bg-green-100' : 'bg-red-50'}`}>
             {isActive ? <CheckCircle size={14} color="#065f46" /> : <XCircle size={14} color="#991b1b" />}
-            <Text style={[styles.statusText, isActive ? styles.statusTextActive : styles.statusTextInactive]}>
+            <Text className={`text-xs font-semibold ${isActive ? 'text-green-800' : 'text-red-800'}`}>
               {isActive ? 'Active' : 'Inactive'}
             </Text>
           </View>
@@ -91,21 +87,21 @@ const TableRow = React.memo(({
       )}
 
       {showButton && (
-        <View style={[styles.cell, { width: ACTION_COL_WIDTH }]}>
+        <View className="justify-center items-center p-3 border-r border-gray-200" style={{ width: ACTION_COL_WIDTH }}>
           <ActionButton onPress={() => { setIsModalOpen?.(true); onEdit?.(item); }}>
-            <Edit2 size={18} color={THEME.text} />
+            <Edit2 size={18} color="#374151" />
           </ActionButton>
         </View>
       )}
 
       {showButtonNavigation && (
-        <View style={[styles.cell, { width: ACTION_COL_WIDTH }]}>
-          <View style={styles.actionGroup}>
+        <View className="justify-center items-center p-3 border-r border-gray-200" style={{ width: ACTION_COL_WIDTH }}>
+          <View className="flex-row gap-2">
             <ActionButton onPress={() => handleViewDetails?.(item.id)}>
-              <Eye size={18} color={THEME.text} />
+              <Eye size={18} color="#374151" />
             </ActionButton>
             {showDelBtn && (
-              <ActionButton onPress={() => handleDeleteStock?.(item.id)} style={styles.deleteButton}>
+              <ActionButton onPress={() => handleDeleteStock?.(item.id)} className="border-red-200 bg-red-50">
                 <Trash2 size={18} color="#dc2626" />
               </ActionButton>
             )}
@@ -116,15 +112,12 @@ const TableRow = React.memo(({
   );
 });
 
-// --- Main Component ---
+TableRow.displayName = 'TableRow';
 
+// --- Main Component ---
 const ExcelLikeTable = (props: ExcelLikeTableProps) => {
   const { data, statusKey = 'activeStatus', columnsToHide = [] } = props;
 
-  // Optimization: useWindowDimensions handles orientation changes automatically
-  // const { width } = useWindowDimensions(); 
-
-  // Optimization: Memoize valid columns to avoid recalculation on every render
   const validColumns = useMemo(() => {
     if (!data || data.length === 0) return [];
     return Object.keys(data[0]).filter((key) => {
@@ -133,39 +126,46 @@ const ExcelLikeTable = (props: ExcelLikeTableProps) => {
     });
   }, [data, statusKey, columnsToHide]);
 
-  const renderItem: ListRenderItem<TableEntity> = useCallback(({ item, index }) => (
-    <TableRow item={item} index={index} validColumns={validColumns} props={props} />
-  ), [validColumns, props]);
+  const renderItem: ListRenderItem<TableEntity> = useCallback(
+    ({ item, index }) => (
+      <TableRow item={item} index={index} validColumns={validColumns} props={props} />
+    ),
+    [validColumns, props]
+  );
+
+  const keyExtractor = useCallback((item: TableEntity, index: number) => {
+    return item.id ? String(item.id) : `row-${index}`;
+  }, []);
 
   if (!data || data.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No data available</Text>
+      <View className="flex-1 p-8 items-center justify-center">
+        <Text className="text-gray-500 text-base">No data available</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.horizontalScroll}>
-        <View style={styles.tableWrapper}>
+    <View className="flex-1 bg-gray-50 p-4">
+      <ScrollView horizontal showsHorizontalScrollIndicator={true} className="flex-1">
+        <View className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
           {/* Header */}
-          <View style={styles.tableHeader}>
+          <View className="flex-row bg-purple-600 border-b-2 border-purple-700">
             {validColumns.map((col) => (
-              <View key={col} style={[styles.headerCell, { width: BASE_COL_WIDTH }]}>
-                <Text style={styles.headerText} numberOfLines={2}>
+              <View key={col} className="p-3 justify-center items-center border-r border-white/20" style={{ width: BASE_COL_WIDTH }}>
+                <Text className="text-white text-xs font-bold uppercase text-center" numberOfLines={2}>
                   {col.replace(/([A-Z])/g, ' $1').trim()}
                 </Text>
               </View>
             ))}
             {props.showStatus && (
-              <View style={[styles.headerCell, { width: BASE_COL_WIDTH }]}>
-                <Text style={styles.headerText}>Status</Text>
+              <View className="p-3 justify-center items-center border-r border-white/20" style={{ width: BASE_COL_WIDTH }}>
+                <Text className="text-white text-xs font-bold uppercase">Status</Text>
               </View>
             )}
             {(props.showButton || props.showButtonNavigation) && (
-              <View style={[styles.headerCell, { width: ACTION_COL_WIDTH }]}>
-                <Text style={styles.headerText}>Actions</Text>
+              <View className="p-3 justify-center items-center" style={{ width: ACTION_COL_WIDTH }}>
+                <Text className="text-white text-xs font-bold uppercase">Actions</Text>
               </View>
             )}
           </View>
@@ -173,87 +173,15 @@ const ExcelLikeTable = (props: ExcelLikeTableProps) => {
           <FlatList
             data={data}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id || Math.random().toString()} // Fallback for safety
+            keyExtractor={keyExtractor}
             initialNumToRender={10}
             windowSize={5}
-            removeClippedSubviews={true} // Performance boost
+            removeClippedSubviews={true}
           />
         </View>
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: THEME.bg, padding: 16 },
-  horizontalScroll: { flex: 1 },
-  tableWrapper: {
-    backgroundColor: THEME.white,
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: THEME.primary,
-    borderBottomWidth: 2,
-    borderBottomColor: THEME.primaryBorder,
-  },
-  headerCell: {
-    padding: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: THEME.primaryBorder,
-  },
-  headerText: {
-    color: THEME.white,
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    textAlign: 'center',
-  },
-  tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
-  evenRow: { backgroundColor: THEME.white },
-  oddRow: { backgroundColor: '#f9fafb' },
-  cell: {
-    padding: 12,
-    justifyContent: 'center',
-    borderRightWidth: 1,
-    borderRightColor: '#e5e7eb',
-  },
-  cellText: { fontSize: 13, color: THEME.text, textAlign: 'center' },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 20,
-    alignSelf: 'center',
-    gap: 4
-  },
-  statusActive: { backgroundColor: '#d1fae5' },
-  statusInactive: { backgroundColor: '#fee2e2' },
-  statusText: { fontSize: 12, fontWeight: '600' },
-  statusTextActive: { color: '#065f46' },
-  statusTextInactive: { color: '#991b1b' },
-  actionButton: {
-    backgroundColor: THEME.white,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 1,
-  },
-  deleteButton: { borderColor: THEME.dangerBorder, backgroundColor: THEME.dangerBg },
-  actionGroup: { flexDirection: 'row', gap: 8, justifyContent: 'center' },
-  emptyContainer: { flex: 1, padding: 32, alignItems: 'center' },
-  emptyText: { color: '#6b7280', fontSize: 16 },
-});
 
 export default ExcelLikeTable;
