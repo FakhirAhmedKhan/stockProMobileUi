@@ -1,82 +1,66 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BarChart3, LayoutDashboard, Settings, Users } from 'lucide-react-native';
-import React from 'react';
+import React, {useState} from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {TouchableOpacity, View} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import DashboardScreen from '../screens/DashboardScreen';
-import ScreenB from '../screens/CustomerScreen';
+import CustomerScreen from '../screens/CustomerScreen';
 import ScreenC from '../screens/ScreenC';
 import SuppliersScreen from '../screens/SuppliersScreen';
+import StockScreen from '../screens/StockScreen';
+import ProductScreen from '../screens/ProductScreen';
+import OrdersScreen from '../screens/OrdersScreen';
+import InvoiceScreen from '../screens/InvoiceScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import SideNav from '../components/SideNav';
 
 export type DashboardTabParamList = {
   DashboardHome: undefined;
   Suppliers: undefined;
-  ScreenB: undefined;
+  Customer: undefined;
+  Stock: undefined;
+  Product: undefined;
+  Orders: undefined;
+  Invoice: undefined;
+  Profile: undefined;
   ScreenC: undefined;
 };
 
-const Tab = createBottomTabNavigator<DashboardTabParamList>();
+const Stack = createNativeStackNavigator<DashboardTabParamList>();
 
 const DashboardNavigator: React.FC = () => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarIcon: ({ focused, color, size }) => {
-          if (route.name === 'DashboardHome') {
-            return <LayoutDashboard size={size} color={color} />;
-          } else if (route.name === 'Suppliers') {
-            return <Users size={size} color={color} />;
-          } else if (route.name === 'ScreenB') {
-            return <BarChart3 size={size} color={color} />;
-          } else if (route.name === 'ScreenC') {
-            return <Settings size={size} color={color} />;
-          }
-          return null;
-        },
-        tabBarActiveTintColor: '#3b82f6', // blue-500
-        tabBarInactiveTintColor: '#9ca3af', // gray-400
-        tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#e5e7eb', // gray-200
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-        },
-      })}
-    >
-      <Tab.Screen
-        name="DashboardHome"
-        component={DashboardScreen}
-        options={{
-          tabBarLabel: 'Dashboard',
+    <View style={{flex: 1}}>
+      <SideNav open={open} onClose={() => setOpen(false)} />
+
+      <Stack.Navigator
+        initialRouteName="DashboardHome"
+        screenOptions={{
+          headerShown: true,
+          headerStyle: {backgroundColor: '#fff'},
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{paddingHorizontal: 12}}
+              onPress={() => setOpen(prev => !prev)}
+            >
+              <Icon name="menu" size={24} color="#111827" />
+            </TouchableOpacity>
+          ),
         }}
-      />
-      <Tab.Screen
-        name="Suppliers"
-        component={SuppliersScreen}
-        options={{
-          tabBarLabel: 'Suppliers',
-        }}
-      />
-      <Tab.Screen
-        name="ScreenB"
-        component={ScreenB}
-        options={{
-          tabBarLabel: 'Markets',
-        }}
-      />
-      <Tab.Screen
-        name="ScreenC"
-        component={ScreenC}
-        options={{
-          tabBarLabel: 'Settings',
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Stack.Screen name="DashboardHome" component={DashboardScreen} options={{title: 'Dashboard'}} />
+        <Stack.Screen name="Suppliers" component={SuppliersScreen} options={{title: 'Suppliers'}} />
+        <Stack.Screen name="Customer" component={CustomerScreen} options={{title: 'Customers'}} />
+        <Stack.Screen name="Stock" component={StockScreen} options={{title: 'Stock'}} />
+        <Stack.Screen name="Product" component={ProductScreen} options={{title: 'Product'}} />
+        <Stack.Screen name="Orders" component={OrdersScreen} options={{title: 'Orders'}} />
+        <Stack.Screen name="Invoice" component={InvoiceScreen} options={{title: 'Invoice'}} />
+        <Stack.Screen name="Profile" component={ProfileScreen} options={{title: 'Profile'}} />
+        <Stack.Screen name="ScreenC" component={ScreenC} options={{title: 'Settings'}} />
+      </Stack.Navigator>
+    </View>
   );
 };
 
