@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {TouchableOpacity, View} from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import DashboardScreen from '../screens/DashboardScreen';
-import CustomerScreen from '../screens/CustomerScreen';
-import ScreenC from '../screens/ScreenC';
-import SuppliersScreen from '../screens/SuppliersScreen';
-import StockScreen from '../screens/StockScreen';
-import ProductScreen from '../screens/ProductScreen';
-import OrdersScreen from '../screens/OrdersScreen';
-import InvoiceScreen from '../screens/InvoiceScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import SideNav from '../components/SideNav';
+import CustomerScreen from '../screens/CustomerScreen';
+import DashboardScreen from '../screens/DashboardScreen';
+import InvoiceScreen from '../screens/InvoiceScreen';
+import OrdersScreen from '../screens/OrdersScreen';
+import ProductScreen from '../screens/ProductScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ScreenC from '../screens/ScreenC';
+import StockScreen from '../screens/StockScreen';
+import SuppliersScreen from '../screens/SuppliersScreen';
 
 export type DashboardTabParamList = {
   DashboardHome: undefined;
