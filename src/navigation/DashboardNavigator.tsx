@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BarChart3, LayoutDashboard, Settings, Users } from 'lucide-react-native';
 import React from 'react';
 import DashboardScreen from '../screens/DashboardScreen';
-import ScreenB from '../screens/ScreenB';
+import ScreenB from '../screens/CustomerScreen';
 import ScreenC from '../screens/ScreenC';
 import SuppliersScreen from '../screens/SuppliersScreen';
 
