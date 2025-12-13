@@ -1,8 +1,8 @@
 import type { AxiosError } from 'axios'
 import axios from 'axios'
-import appConfig from 'constant/app.config'
 import AxiosRequestInterceptorConfigCallback from './AxiosRequestInterceptorConfigCallback'
 import AxiosResponseInterceptorErrorCallback from './AxiosResponseInterceptorErrorCallback'
+import appConfig from '@/constants/app.config'
 
 const AxiosBase = axios.create({
     timeout: 60000,

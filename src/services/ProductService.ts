@@ -1,6 +1,5 @@
-import { useSessionUser } from '@/store/authStore'
 import ApiService from './ApiService'
-import endpointConfig from '@/configs/endpoint.config'
+import endpointConfig from '@/constants/endpoint.config'
 
 export async function getProduct(
     stockId?: string,

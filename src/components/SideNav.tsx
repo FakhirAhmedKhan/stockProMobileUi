@@ -1,14 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
-import { FileText, Home, Package, Settings, ShoppingBag, Users } from 'lucide-react-native';
 import React, { useEffect, useRef } from 'react';
-import {
-    Animated,
-    Dimensions,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { FileText, Home, Package, Settings, ShoppingBag, Users } from 'lucide-react-native';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 const {width: WINDOW_WIDTH} = Dimensions.get('window');
 const NAV_WIDTH = Math.min(300, Math.floor(WINDOW_WIDTH * 0.72));
