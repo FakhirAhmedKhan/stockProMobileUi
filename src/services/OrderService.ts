@@ -1,5 +1,5 @@
+import endpointConfig from '@/constants/endpoint.config'
 import ApiService from './ApiService'
-import endpointConfig from '@/configs/endpoint.config'
 
 export async function getOrders() {
     return ApiService.fetchDataWithAxios({
@@ -31,6 +31,7 @@ export async function getOrdersById(id) {
 //     })
 // }
 
+
 export async function createOrder(data) {
     return ApiService.fetchDataWithAxios({
         url: endpointConfig.orders,
@@ -39,12 +40,18 @@ export async function createOrder(data) {
     })
 }
 
-// async updateStock(stockId, stockData) {
-//     const response = await ApiService.put(`${endpointConfig.updateStock}/${stockId}`, stockData)
-//     return response.data
-// }
+export async function editOrder(data) {
+    return ApiService.fetchDataWithAxios({
+        url: `${endpointConfig.orders}/${data.id}`,
+        method: 'put',
+        data: data,
+    })
+}
 
-// async deleteStock(stockId) {
-//     const response = await ApiService.delete(`${endpointConfig.deleteStock}/${stockId}`)
-//     return response.data
-// }
+export async function deleteOrder(id) {
+    return ApiService.fetchDataWithAxios({
+        url: `${endpointConfig.orders}/${id}`,
+        method: 'delete',
+    })
+}
+

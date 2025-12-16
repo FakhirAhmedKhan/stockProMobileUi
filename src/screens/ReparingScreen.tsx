@@ -1,26 +1,16 @@
-import ExcelLikeTable from '@/components/ExcelLikeTable'
-import { MainHeader } from '@/components/MainHeader'
-import { Pagination } from '@/components/Pagination'
-import SearchBar from '@/components/SearchBar'
-import { useProduct } from '@/hooks/useProduct'
-import {
-  ActivityIndicator,
-  Text,
-  View,
-} from 'react-native'
+import ExcelLikeTable from "@/components/ExcelLikeTable";
+import { MainHeader } from "@/components/MainHeader";
+import { Pagination } from "@/components/Pagination";
+import SearchBar from "@/components/SearchBar";
+import useRepairing from "@/hooks/useRepairing";
+import { ActivityIndicator, Text, View } from "react-native";
 
-const ProductScreen = () => {
+const ReparingScreen: React.FC = () => {
   const {
-    filteredProducts,
+    filteredRepairing,
     isLoading,
     searchTerm,
     setSearchTerm,
-    isModalOpen,
-    setIsModalOpen,
-    setSelectedProduct,
-    formData,
-    handleChange,
-    handleFormSubmit,
     currentPage,
     setCurrentPage,
     pageSize,
@@ -29,14 +19,13 @@ const ProductScreen = () => {
     handleEdit,
     handleView,
     handleDelete,
-
-  } = useProduct()
+  } = useRepairing();
 
   return (
     <View className="flex-1 bg-gray-50">
       <View className="p-6 pb-0">
         <MainHeader
-          H1Heading="Product Overview"
+          H1Heading="stock Overview"
           Paragraph="Monitor your business metrics and performance in real-time"
           BtnText="Add New Item"
           Updates="5 Updates Today"
@@ -46,7 +35,6 @@ const ProductScreen = () => {
           showRangePicker={false}
         />
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
       </View>
 
       <View className="flex-1 px-6 pt-4">
@@ -58,12 +46,14 @@ const ProductScreen = () => {
         ) : filteredProducts.length === 0 ? (
           <View className="flex-1 items-center justify-center">
             <Text className="text-gray-500 text-base">
-              {searchTerm ? 'No products found matching your search' : 'No products found'}
+              {searchTerm
+                ? "No products found matching your search"
+                : "No products found"}
             </Text>
           </View>
         ) : (
           <ExcelLikeTable
-            data={filteredProducts}
+            data={filteredRepairing}
             showStatus={true}
             showButton={true}
             showButtonNavigation={true}
@@ -84,7 +74,7 @@ const ProductScreen = () => {
         text="Items per page"
       />
     </View>
-  )
-}
+  );
+};
 
-export default ProductScreen
+export default ReparingScreen;

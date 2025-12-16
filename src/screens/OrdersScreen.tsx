@@ -1,19 +1,12 @@
+import ExcelLikeTable from '@/components/ExcelLikeTable';
+import { MainHeader } from '@/components/MainHeader';
+import { Pagination } from '@/components/Pagination';
+import SearchBar from '@/components/SearchBar';
+import useOders from '@/hooks/useOders';
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import useOders from '@/hooks/useOders';
-import SearchBar from '@/components/SearchBar';
-import { Pagination } from '@/components/Pagination';
-import { MainHeader } from '@/components/MainHeader';
-import ExcelLikeTable from '@/components/ExcelLikeTable';
 
 const OrdersScreen: React.FC = () => {
-  // Handler for when an order is created/updated
-  const handleOrderCreated = (order: any) => {
-    console.log('Order created/updated:', order);
-    // Add your logic here to handle the created order
-    // For example, refresh the orders list
-    fetchOrders();
-  };
 
   const {
     orders,
@@ -28,21 +21,13 @@ const OrdersScreen: React.FC = () => {
     fetchOrders,
     handleEdit,
     handleSave,
-  } = useOders(handleOrderCreated);
+    // handleOrderCreated, // Not returned by hook
+    totalPages,
+    handleView,
+    handleDelete,
 
-  // Calculate total pages
-  const totalPages = Math.ceil(totalCount / pageSize);
+  } = useOders();
 
-  // Placeholder functions for view and delete
-  const handleView = (order: any) => {
-    console.log('View order:', order);
-    // Navigate to order details or show modal
-  };
-
-  const handleDelete = (orderId: string | number) => {
-    console.log('Delete order:', orderId);
-    // Implement delete logic
-  };
 
   return (
     <View className="flex-1 bg-gray-50">

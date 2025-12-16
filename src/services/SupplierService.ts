@@ -1,4 +1,4 @@
-import endpointConfig from 'constant/endpoint.config'
+import endpointConfig from '@/constants/endpoint.config'
 import ApiService from './ApiService'
 
 export async function getSupplier(pageNumber = 1, pageSize = 10, searchTerm?: string) {

@@ -1,5 +1,5 @@
+import endpointConfig from '@/constants/endpoint.config'
 import ApiService from './ApiService'
-import endpointConfig from '@/configs/endpoint.config'
 
 export async function getStocks(
     pageNumber = 1,

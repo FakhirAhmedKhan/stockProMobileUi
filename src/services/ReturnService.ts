@@ -1,7 +1,8 @@
+import endpointConfig from '@/constants/endpoint.config'
 import ApiService from './ApiService'
-import endpointConfig from '@/configs/endpoint.config'
 
-export async function getReturns(stockId) {
+
+export async function getReturns( stockId?: String) {
     return ApiService.fetchDataWithAxios({
         url: endpointConfig.GetReturn,
         method: 'get',

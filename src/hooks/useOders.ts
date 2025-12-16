@@ -1,14 +1,16 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { getAllOrders } from '@/services/OrderService'
-import { getStockById } from '@/services/StockService'
-import { getProduct } from '@/services/ProductService'
-import { getCustomers } from '@/services/CustomerService'
 import type { FormData } from '@/@types/Types'
+import { getCustomers } from '@/services/CustomerService'
+import { deleteOrder, getAllOrders } from '@/services/OrderService'
+import { getProduct } from '@/services/ProductService'
+import { getStockById } from '@/services/StockService'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Alert } from 'react-native'
 
-const useOders = (onOrderCreated: (order: any) => void, stock?: any) => {
+const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
     const [isLoading, setIsLoading] = useState(true)
     const [orders, setOrders] = useState<any[]>([])
     const [totalCount, setTotalCount] = useState(0)
+    const [totalPages, setTotalPages] = useState(1)
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 9
     const [searchTerm, setSearchTerm] = useState('')
@@ -181,6 +183,20 @@ const useOders = (onOrderCreated: (order: any) => void, stock?: any) => {
     }, [profit, formData.baseUnitPrice, formData.quantity])
 
     const handleEdit = (order: any) => {
+        setFormData({
+            stockTitle: order.stockTitle || '',
+            totalQuantity: 0,
+            stockPrice: 0,
+            customerId: order.customerId || '',
+            stockId: order.stockId || '',
+            baseUnitPrice: order.baseUnitPrice || 0,
+            quantity: order.quantity || 0,
+            unitPrice: order.unitPrice || 0,
+            totalPrice: order.totalPrice || 0,
+            paymentStatus: order.paymentStatus || 'Paid',
+            productIds: order.productIds || [],
+            totalPaid: order.totalAmountPaid || 0,
+        })
         setSelectedOrder(order)
         setIsModalOpen(true)
     }
@@ -194,13 +210,42 @@ const useOders = (onOrderCreated: (order: any) => void, stock?: any) => {
         resetForm()
     }
 
+    const handleDelete = async (id: string) => {
+        Alert.alert(
+            "Delete Order",
+            "Are you sure you want to delete this order?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await deleteOrder(id)
+                            fetchOrders()
+                        } catch (error) {
+                            console.error("Failed to delete order", error)
+                        }
+                    }
+                }
+            ]
+        )
+    }
+
+    const handleView = (id: string) => {
+        // Navigation logic here if needed, or pass navigation prop
+        console.log("View order", id)
+    }
+
     // ✅ Fetch orders
     const fetchOrders = useCallback(async () => {
         try {
             setIsLoading(true)
             const data: any = await getAllOrders(currentPage, pageSize, searchTerm)
             setOrders(data.items)
+            setOrders(data.items)
             setTotalCount(data?.totalCount ?? data.items.length)
+            setTotalPages(Math.ceil((data?.totalCount ?? data.items.length) / pageSize))
         } finally {
             setIsLoading(false)
         }
@@ -284,6 +329,9 @@ const useOders = (onOrderCreated: (order: any) => void, stock?: any) => {
         handleEdit,
         handleSave,
         handleCloseModal,
+        handleDelete,
+        handleView,
+        totalPages,
 
         // Form state and handlers
         formData,

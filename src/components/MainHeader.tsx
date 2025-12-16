@@ -16,6 +16,7 @@ interface HeaderProps {
   showRangePicker?: boolean;
   Icon?: React.ReactNode;
   fullName?: string;
+  onPress?: () => void;
 }
 
 export const MainHeader: React.FC<HeaderProps> = ({
@@ -24,6 +25,7 @@ export const MainHeader: React.FC<HeaderProps> = ({
   H1Heading,
   Paragraph,
   showButton = true,
+  onPress,
 }) => {
   return (
     <View className="mb-6 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
@@ -41,7 +43,7 @@ export const MainHeader: React.FC<HeaderProps> = ({
 
         {showButton && (
           <TouchableOpacity
-            onPress={() => setIsModalOpen?.(true)}
+            onPress={() => onPress ? onPress() : setIsModalOpen?.(true)}
             className="flex-row items-center bg-blue-600 px-4 py-2.5 rounded-xl active:bg-blue-700"
           >
             <Icon name="add" size={20} color="#fff" />
