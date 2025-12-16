@@ -48,11 +48,8 @@ const StockScreen: React.FC = () => {
 
   const onSubmit = (data: any) => {
     submitStock(data);
-    reset(); // Reset form after submit
+    reset(); 
   };
-
-  // Watch for category to handle conditional logic or do it in component
-  // For now let StockFromInputs handle UI logic based on values properly if passed control
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -103,17 +100,14 @@ const StockScreen: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         handleSubmit={handleSubmit(onSubmit)}
-        isSubmitting={isLoading} // reusing isLoading for submitting state for now, assuming submitStock sets it
+        isSubmitting={isLoading}
         title="Add New Stock"
-      >
-        <StockCreateInputs
-          control={control}
-          errors={errors}
-          loadSuppliers={loadSuppliers}
-          setValue={setValue}
-          watch={watch}
-        />
-      </StockCreateModal>
+        control={control}
+        errors={errors}
+        loadSuppliers={loadSuppliers}
+        setValue={setValue}
+        watch={watch}
+      />
 
       <Pagination
         pageNumber={currentPage}
@@ -123,7 +117,7 @@ const StockScreen: React.FC = () => {
         totalPages={totalPages}
         text="Items per page"
       />
-    </View>
+    </View >
   );
 };
 

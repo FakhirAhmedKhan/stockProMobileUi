@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, FlatList } from 'react-native';
-import { CheckCircle2, AlertCircle } from 'lucide-react-native';
-import { Controller } from 'react-hook-form';
 import { validateField as globalValidateField } from '@/components/Forms/validateField';
+import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
+import React, { useCallback, useState } from 'react';
+import { Controller } from 'react-hook-form';
+import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 function useFormHandlers() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -133,10 +133,10 @@ export const InputField: React.FC<InputFieldProps> = ({
 
     // For select/picker fields
     if (asyncSelect || reactSelect || showOptions) {
-      const displayValue = 
+      const displayValue =
         asyncSelect ? (asyncValue?.label || inputValue?.label || 'Select...')
-        : reactSelect ? (selectValue?.label || inputValue?.label || 'Select...')
-        : inputValue || 'Select...';
+          : reactSelect ? (selectValue?.label || inputValue?.label || 'Select...')
+            : inputValue || 'Select...';
 
       return (
         <>
@@ -146,9 +146,8 @@ export const InputField: React.FC<InputFieldProps> = ({
               setShowPicker(true);
             }}
             disabled={readOnly || isDisabled}
-            className={`flex-row items-center border-2 rounded-xl px-3 py-3 ${
-              hasError ? 'border-red-400' : isValid ? 'border-emerald-400' : 'border-slate-300'
-            } ${readOnly || isDisabled ? 'bg-gray-100' : 'bg-white'}`}
+            className={`flex-row items-center border rounded-xl px-4 py-3.5 ${hasError ? 'border-red-300 bg-red-50/50' : isValid ? 'border-emerald-300' : 'border-gray-200'
+              } ${readOnly || isDisabled ? 'bg-gray-50' : 'bg-white'}`}
           >
             <View className="mr-2">{icon}</View>
             <Text className={`flex-1 ${!inputValue ? 'text-slate-400' : 'text-slate-800'}`}>
@@ -177,10 +176,10 @@ export const InputField: React.FC<InputFieldProps> = ({
                     <Text className="text-blue-600 font-medium">Done</Text>
                   </TouchableOpacity>
                 </View>
-                
+
                 <FlatList
                   data={asyncSelect ? asyncOptions : reactSelect ? selectOptions : options}
-                  keyExtractor={(item, index) => 
+                  keyExtractor={(item, index) =>
                     typeof item === 'string' ? item : (item.value || index.toString())
                   }
                   renderItem={({ item }) => {
@@ -240,9 +239,8 @@ export const InputField: React.FC<InputFieldProps> = ({
           placeholderTextColor="#94a3b8"
           keyboardType={getKeyboardType()}
           secureTextEntry={type === 'password'}
-          className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl ${
-            hasError ? 'border-red-400' : isValid ? 'border-emerald-400' : 'border-slate-300'
-          } ${readOnly ? 'bg-gray-100' : 'bg-white'} text-slate-800`}
+          className={`w-full pl-11 pr-12 py-3.5 border rounded-xl font-medium text-base ${hasError ? 'border-red-300 bg-red-50/50' : isValid ? 'border-emerald-300' : 'border-gray-200'
+            } ${readOnly ? 'bg-gray-50 text-gray-500' : 'bg-white text-gray-900'}`}
         />
 
         {isValid && (

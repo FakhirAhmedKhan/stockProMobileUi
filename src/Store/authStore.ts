@@ -1,9 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { TOKEN_NAME_IN_STORAGE } from '@/constants/api.constant'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import type { User } from '@/@types/auth'
-import appConfig from '@/constants/app.config'
+import { createJSONStorage, persist } from 'zustand/middleware'
+
+const ADMIN = 'admin'
+
+export type User = {
+    avatar?: string
+    userName?: string
+    email?: string
+    authority?: string[]
+    userId?: string
+}
 
 type Session = {
     signedIn: boolean
@@ -20,14 +28,6 @@ type AuthAction = {
 }
 
 const getPersistStorage = () => {
-    if (appConfig.accessTokenPersistStrategy === 'localStorage') {
-        return localStorage
-    }
-
-    if (appConfig.accessTokenPersistStrategy === 'sessionStorage') {
-        return sessionStorage
-    }
-
     return AsyncStorage
 }
 
@@ -66,7 +66,10 @@ export const useSessionUser = create<AuthState & AuthAction>()(
                     },
                 })),
         }),
-        { name: 'sessionUser', storage: createJSONStorage(() => localStorage) },
+        {
+            name: 'sessionUser',
+            storage: createJSONStorage(() => AsyncStorage),
+        },
     ),
 )
 

@@ -1,16 +1,20 @@
 import { Sparkles } from "lucide-react-native";
-import React from "react";
 import { KeyboardAvoidingView, Modal, Platform, TouchableWithoutFeedback, View } from "react-native";
+import { StockCreateInputs } from "../Forms/StockFromInputs";
 import { ModelFooter } from "../ModelFooter";
 import { ModelHeader } from "../ModelHeader";
 
 export default function StockCreateModal({
   isOpen,
   onClose,
-  handleSubmit, // Function to trigger form submission
+  handleSubmit,
   title = "Add New Stock",
-  children,
   isSubmitting = false,
+  control,
+  errors,
+  loadSuppliers,
+  setValue,
+  watch,
 }: any) {
   if (!isOpen) return null;
 
@@ -26,26 +30,32 @@ export default function StockCreateModal({
         className="flex-1"
       >
         <TouchableWithoutFeedback onPress={onClose}>
-          <View className="flex-1 bg-black/40 justify-center items-center p-4">
+          <View className="flex-1 bg-black/50 justify-center items-center px-4">
             <TouchableWithoutFeedback>
-              <View className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-3xl max-h-[90%] overflow-hidden shadow-xl">
+              <View className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg h-[85%] shadow-2xl flex flex-col overflow-hidden">
                 {/* Header */}
                 <ModelHeader
                   title={title}
-                  icon={<Sparkles size={20} color="#3B82F6" />}
+                  icon={<Sparkles size={24} color="#3B82F6" />}
                   onClose={onClose}
                 />
 
                 {/* Content */}
-                <View className="flex-1">
-                  {children}
+                <View className="flex-1 w-full">
+                  <StockCreateInputs
+                    control={control}
+                    errors={errors}
+                    loadSuppliers={loadSuppliers}
+                    setValue={setValue}
+                    watch={watch}
+                  />
                 </View>
 
                 {/* Footer */}
                 <ModelFooter
                   onClose={onClose}
                   handleSubmit={handleSubmit}
-                  title="Save Stock" // Or generic "Save"
+                  title="Save Stock"
                   isSubmitting={isSubmitting}
                 />
               </View>

@@ -7,7 +7,6 @@ import { InputField } from "./Inputid";
 export const StockCreateInputs = ({
   register,
   generateBarcode,
-  // category, // Removed as we watch it now
   errors,
   handleSubmit,
   onSubmit,
@@ -27,59 +26,30 @@ export const StockCreateInputs = ({
     const q = parseFloat(totalQuantity) || 0;
     const u = parseFloat(unitPrice) || 0;
     if (q > 0 && u > 0) {
-      // Avoid infinite loop if totalPrice is already correct
-      // However, to mimic 'if quantity or unit price changes, update Total Price'
-      // we should probably check if it was focused? Or just override?
-      // Simple override:
       setValue("totalPrice", (q * u).toFixed(2));
     }
   }, [totalQuantity, unitPrice, setValue]);
 
   useEffect(() => {
-    // If Total Price is updated manually (and quantity exists), update Unit Price
-    // This conflicts with the above Effect if both run blindly.
-    // Ideally we need to know WHICH field changed.
-    // But simplistic approach: if totalPrice changes and IS NOT q*u ??
-
-    // Actually, simpler logic:
-    // Update Remaining
     const price = parseFloat(totalPrice) || 0;
     const paid = parseFloat(totalPaid) || 0;
     setValue("totalRemaining", (price - paid).toFixed(2));
   }, [totalPrice, totalPaid, setValue]);
 
-  // Simplified logic: strict dependency flow
-  // Qty * Unit -> Price
-  // Price - Paid -> Remaining
-  // We won't support editing Price to update Unit Price for now to avoid complexity without more state
-
   return (
-    <ScrollView className="flex-1 p-6">
-      <View className="space-y-6">
-        <View className="gap-5">
-          {/* Supplier */}
-          <InputField
-            id="StockCreateSupplierId"
-            name="supplierId"
-            label="Supplier"
-            icon={<User size={18} color="#6B7280" />}
-            asyncSelect={true}
-            loadOptions={loadSuppliers}
-            placeholder="Select supplier..."
-            useController={true}
-            control={control}
-            rules={{ required: "Supplier is required" }}
-            error={errors.supplierId?.message}
-            required
-          />
+    <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
+      <View className="space-y-6 pb-6">
 
-          {/* Stock Title */}
+        {/* Section 1: Basic Information */}
+        <View className="gap-4">
+          <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wider ml-1">Basic Information</Text>
+
           <InputField
             id="StockCreateStockTitle"
             name="stockTitle"
             label="Stock Title"
-            icon={<User size={18} color="#6B7280" />}
-            placeholder="Stock Title"
+            icon={<Package size={18} color="#6B7280" />}
+            placeholder="e.g. iPhone 14 Pro Max"
             useController={true}
             control={control}
             rules={{ required: "Stock Title is required" }}
@@ -87,23 +57,42 @@ export const StockCreateInputs = ({
             required
           />
 
-          {/* Category */}
-          <InputField
-            id="StockCreateCategory"
-            name="category"
-            label="Category"
-            icon={<Package size={18} color="#6B7280" />}
-            showOptions={true}
-            options={categoryOptions}
-            placeholder="Category"
-            useController={true}
-            control={control}
-            rules={{ required: "Category is required" }}
-            error={errors.category?.message}
-            required
-          />
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <InputField
+                id="StockCreateCategory"
+                name="category"
+                label="Category"
+                icon={<Package size={18} color="#6B7280" />}
+                showOptions={true}
+                options={categoryOptions}
+                placeholder="Category"
+                useController={true}
+                control={control}
+                rules={{ required: "Category is required" }}
+                error={errors.category?.message}
+                required
+              />
+            </View>
+            <View className="flex-1">
+              <InputField
+                id="StockCreateSupplierId"
+                name="supplierId"
+                label="Supplier"
+                icon={<User size={18} color="#6B7280" />}
+                asyncSelect={true}
+                loadOptions={loadSuppliers}
+                placeholder="Select..."
+                useController={true}
+                control={control}
+                rules={{ required: "Supplier is required" }}
+                error={errors.supplierId?.message}
+                required
+              />
+            </View>
+          </View>
 
-          {/* Expiry Date */}
+          {/* Expiry Date (Conditional) */}
           {category === "Food" && (
             <InputField
               id="StockCreateExpiryDate"
@@ -119,125 +108,150 @@ export const StockCreateInputs = ({
               required
             />
           )}
+        </View>
 
-          {/* Quantity */}
-          <InputField
-            id="StockCreateTotalQuantity"
-            name="totalQuantity"
-            label="Quantity"
-            type="number"
-            icon={<Hash size={18} color="#6B7280" />}
-            placeholder="Quantity"
-            useController={true}
-            control={control}
-            rules={{
-              required: "Quantity is required",
-              min: { value: 1, message: "Min 1" },
-            }}
-            error={errors.totalQuantity?.message}
-            required
-          />
+        {/* Section 2: Product Attributes */}
+        <View className="gap-4">
+          <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wider ml-1 mt-2">Product Attributes</Text>
 
-          {/* Unit Price */}
-          <InputField
-            id="StockCreateUnitPrice"
-            name="unitPrice"
-            label="Unit Price"
-            type="number"
-            icon={<DollarSign size={18} color="#6B7280" />}
-            placeholder="Unit Price"
-            useController={true}
-            control={control}
-            rules={{ required: "Unit Price is required" }}
-            error={errors.unitPrice?.message}
-            required
-          />
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <InputField
+                id="StockCreateStorage"
+                name="storage"
+                label="Storage"
+                icon={<Package size={18} color="#6B7280" />}
+                placeholder="e.g. 256GB"
+                useController={true}
+                control={control}
+                rules={{ required: "Storage is required" }}
+                error={errors.storage?.message}
+                required
+              />
+            </View>
+            <View className="flex-1">
+              <InputField
+                id="StockCreateColor"
+                name="color"
+                label="Color"
+                icon={<Package size={18} color="#6B7280" />}
+                placeholder="e.g. Black"
+                useController={true}
+                control={control}
+                rules={{ required: "Color is required" }}
+                error={errors.color?.message}
+                required
+              />
+            </View>
+          </View>
+        </View>
 
-          {/* Total Price */}
-          <InputField
-            id="StockCreateTotalPrice"
-            name="totalPrice"
-            label="Total Price"
-            type="number"
-            icon={<DollarSign size={18} color="#6B7280" />}
-            placeholder="Total Price"
-            useController={true}
-            control={control}
-            rules={{ required: "Total Price is required" }}
-            error={errors.totalPrice?.message}
-            required
-          />
+        {/* Section 3: Inventory & Pricing */}
+        <View className="gap-4">
+          <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wider ml-1 mt-2">Inventory & Pricing</Text>
 
-          {/* Total Paid */}
-          <InputField
-            id="StockCreateTotalPaid"
-            name="totalPaid"
-            label="Total Paid"
-            type="number"
-            icon={<DollarSign size={18} color="#6B7280" />}
-            placeholder="Total Paid"
-            useController={true}
-            control={control}
-            rules={{ required: "Total Paid is required" }}
-            error={errors.totalPaid?.message}
-            required
-          />
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <InputField
+                id="StockCreateTotalQuantity"
+                name="totalQuantity"
+                label="Quantity"
+                type="number"
+                icon={<Hash size={18} color="#6B7280" />}
+                placeholder="0"
+                useController={true}
+                control={control}
+                rules={{
+                  required: "Required",
+                  min: { value: 1, message: "Min 1" },
+                }}
+                error={errors.totalQuantity?.message}
+                required
+              />
+            </View>
+            <View className="flex-1">
+              <InputField
+                id="StockCreateUnitPrice"
+                name="unitPrice"
+                label="Unit Price"
+                type="number"
+                icon={<DollarSign size={18} color="#6B7280" />}
+                placeholder="0.00"
+                useController={true}
+                control={control}
+                rules={{ required: "Required" }}
+                error={errors.unitPrice?.message}
+                required
+              />
+            </View>
+          </View>
 
-          {/* Total Remaining */}
-          <InputField
-            id="StockCreateTotalRemaining"
-            name="totalRemaining"
-            label="Total Remaining"
-            type="number"
-            icon={<DollarSign size={18} color="#6B7280" />}
-            placeholder="Total Remaining"
-            useController={true}
-            control={control}
-            readOnly
-            error={errors.totalRemaining?.message}
-          />
+          <View className="bg-gray-50 p-4 rounded-2xl space-y-4 border border-gray-100">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-semibold text-gray-700">Calculated Totals</Text>
+              <View className="bg-blue-100 px-2 py-0.5 rounded text-xs text-blue-700 font-medium"><Text className="text-blue-700 text-xs font-semibold">Auto-calculated</Text></View>
+            </View>
 
-          {/* Storage */}
-          <InputField
-            id="StockCreateStorage"
-            name="storage"
-            label="Storage"
-            icon={<Package size={18} color="#6B7280" />}
-            placeholder="Storage"
-            useController={true}
-            control={control}
-            rules={{ required: "Storage is required" }}
-            error={errors.storage?.message}
-            required
-          />
+            <InputField
+              id="StockCreateTotalPrice"
+              name="totalPrice"
+              label="Total Price"
+              type="number"
+              icon={<DollarSign size={18} color="#6B7280" />}
+              placeholder="0.00"
+              useController={true}
+              control={control}
+              rules={{ required: "Required" }}
+              error={errors.totalPrice?.message}
+              required
+            />
 
-          {/* Color */}
-          <InputField
-            id="StockCreateColor"
-            name="color"
-            label="Color"
-            icon={<Package size={18} color="#6B7280" />}
-            placeholder="Color"
-            useController={true}
-            control={control}
-            rules={{ required: "Color is required" }}
-            error={errors.color?.message}
-            required
-          />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <InputField
+                  id="StockCreateTotalPaid"
+                  name="totalPaid"
+                  label="Amount Paid"
+                  type="number"
+                  icon={<DollarSign size={18} color="#6B7280" />}
+                  placeholder="0.00"
+                  useController={true}
+                  control={control}
+                  rules={{ required: "Required" }}
+                  error={errors.totalPaid?.message}
+                  required
+                />
+              </View>
+              <View className="flex-1">
+                <InputField
+                  id="StockCreateTotalRemaining"
+                  name="totalRemaining"
+                  label="Remaining"
+                  type="number"
+                  icon={<DollarSign size={18} color="#6B7280" />}
+                  placeholder="0.00"
+                  useController={true}
+                  control={control}
+                  readOnly
+                  error={errors.totalRemaining?.message}
+                />
+              </View>
+            </View>
+          </View>
         </View>
 
         {/* Barcode Toggle */}
-        <View className="border-t border-gray-200 pt-5 mt-6 flex-row items-center justify-between">
-          <View className="flex-1">
+        <View className="border-t border-gray-100 pt-5 mt-2 flex-row items-center justify-between">
+          <View className="flex-1 mr-4">
             <Text className="font-semibold text-gray-800 text-base">
               Generate Barcode
             </Text>
             {generateBarcode ? (
-              <Text className="text-sm text-green-600 mt-1">
+              <Text className="text-xs text-green-600 mt-1">
                 Unique barcode for each item.
               </Text>
             ) : (
-              <Text className="text-sm text-gray-600 mt-1">
+              <Text className="text-xs text-gray-500 mt-1">
                 Single barcode for entire quantity.
               </Text>
             )}
@@ -250,9 +264,9 @@ export const StockCreateInputs = ({
               <Switch
                 value={value}
                 onValueChange={onChange}
-                trackColor={{ false: "#D1D5DB", true: "#3B82F6" }}
+                trackColor={{ false: "#E5E7EB", true: "#3B82F6" }}
                 thumbColor="#FFFFFF"
-                ios_backgroundColor="#D1D5DB"
+                ios_backgroundColor="#E5E7EB"
               />
             )}
           />

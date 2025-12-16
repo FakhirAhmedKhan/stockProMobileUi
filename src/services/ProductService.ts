@@ -1,6 +1,6 @@
+import endpointConfig from '@/constants/endpoint.config'
 import { useSessionUser } from '@/Store/authStore'
 import ApiService from './ApiService'
-import endpointConfig from '@/constants/endpoint.config'
 
 export async function getProduct(
     stockId?: string,
@@ -31,7 +31,7 @@ export async function GetAllProduct(
     const userId = user?.userId || ''
 
     return ApiService.fetchDataWithAxios({
-        url: `${endpointConfig.GetAllProduct}/${userId}?pageNumber=${pageNumber}&pageSize=${pageSize}&search=${searchTerm}`, // ✅ userId in path
+        url: `${endpointConfig.Product}?userId=${userId}&pageNumber=${pageNumber}&pageSize=${pageSize}&search=${searchTerm}`,
         method: 'get',
     })
 }

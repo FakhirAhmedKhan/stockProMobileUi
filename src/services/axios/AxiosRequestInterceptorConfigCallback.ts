@@ -54,11 +54,13 @@ const AxiosRequestInterceptorConfigCallback = async (
 
     // ✅ Inject Authorization header (TOKEN_TYPE already includes trailing space)
     if (accessToken) {
+        config.headers = config.headers || {};
         config.headers[REQUEST_HEADER_AUTH_KEY] = `${TOKEN_TYPE}${accessToken}`;
     }
 
     // ✅ Send user id via header to avoid mutating payloads
     if (userId) {
+        config.headers = config.headers || {};
         config.headers['x-user-id'] = userId;
     }
 
