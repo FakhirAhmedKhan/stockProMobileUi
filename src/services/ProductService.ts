@@ -31,7 +31,7 @@ export async function GetAllProduct(
     const userId = user?.userId || ''
 
     return ApiService.fetchDataWithAxios({
-        url: `${endpointConfig.Product}?userId=${userId}&pageNumber=${pageNumber}&pageSize=${pageSize}&search=${searchTerm}`,
+        url: `${endpointConfig.GetAllProduct}?userId=${userId}&pageNumber=${pageNumber}&pageSize=${pageSize}&search=${searchTerm}`,
         method: 'get',
     })
 }

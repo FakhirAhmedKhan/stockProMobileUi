@@ -2,8 +2,7 @@ import ExcelLikeTable from '@/components/ExcelLikeTable';
 import { MainHeader } from '@/components/MainHeader';
 import { Pagination } from '@/components/Pagination';
 import SearchBar from '@/components/SearchBar';
-import useOders from '@/hooks/useOders';
-import React from 'react';
+import useOrders from '@/hooks/useOrders';
 import { ActivityIndicator, Text, View } from 'react-native';
 
 const OrdersScreen: React.FC = () => {
@@ -26,7 +25,7 @@ const OrdersScreen: React.FC = () => {
     handleView,
     handleDelete,
 
-  } = useOders();
+  } = useOrders();
 
 
   return (

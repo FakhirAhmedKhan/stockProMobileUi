@@ -15,21 +15,15 @@ const ProductScreen = () => {
     isLoading,
     searchTerm,
     setSearchTerm,
-    isModalOpen,
-    setIsModalOpen,
-    setSelectedProduct,
-    formData,
-    handleChange,
-    handleFormSubmit,
     currentPage,
     setCurrentPage,
     pageSize,
     setPageSize,
     totalPages,
     handleEdit,
-    handleView,
+    handleViewDetails,
     handleDelete,
-
+    stats
   } = useProduct()
 
   return (
@@ -39,8 +33,8 @@ const ProductScreen = () => {
           H1Heading="Product Overview"
           Paragraph="Monitor your business metrics and performance in real-time"
           BtnText="Add New Item"
-          Updates="5 Updates Today"
-          StutsUpdates="System Active"
+          Updates={`${stats.total} Total Products`}
+          StutsUpdates={`${stats.available} Available`}
           fullName="John Doe"
           showButton={false}
           showRangePicker={false}
@@ -69,7 +63,7 @@ const ProductScreen = () => {
             showButtonNavigation={true}
             showDelBtn={true}
             onEdit={handleEdit}
-            handleViewDetails={handleView}
+            handleViewDetails={handleViewDetails}
             handleDeleteStock={handleDelete}
           />
         )}

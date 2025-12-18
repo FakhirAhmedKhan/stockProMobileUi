@@ -18,7 +18,7 @@ export async function getReturns( stockId?: String) {
 // }
 // export async function updateReturn(id) {
 //     return ApiService.fetchDataWithAxios({
-//         url: `${endpointConfig.orders}/${id}`,
+//         url: `${endpointConfig.orders}/${id}`,`
 //         method: 'get',
 //     })
 // }

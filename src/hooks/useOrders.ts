@@ -1,4 +1,3 @@
-import type { FormData } from '@/@types/Types'
 import { getCustomers } from '@/services/CustomerService'
 import { deleteOrder, getAllOrders } from '@/services/OrderService'
 import { getProduct } from '@/services/ProductService'
@@ -6,7 +5,23 @@ import { getStockById } from '@/services/StockService'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert } from 'react-native'
 
-const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
+interface FormData {
+    stockTitle: string
+    totalQuantity: number
+    stockPrice: number
+    customerId: string | number
+    stockId: string | number
+    baseUnitPrice: number
+    quantity: number
+    unitPrice: number
+    totalPrice: number
+    paymentStatus: string
+    productIds: any[]
+    totalPaid: number
+}
+
+
+const useOrders = (onOrderCreated?: (order: any) => void, stock?: any) => {
     const [isLoading, setIsLoading] = useState(true)
     const [orders, setOrders] = useState<any[]>([])
     const [totalCount, setTotalCount] = useState(0)
@@ -50,7 +65,7 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
     const fetchStockById = useCallback(async (id: number) => {
         try {
             setIsFormLoading(true)
-            const s = await getStockById(id)
+            const s: any = await getStockById(id)
             setFormData((prev) => ({
                 ...prev,
                 stockTitle: s.stockTitle,
@@ -67,60 +82,55 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
         }
     }, [])
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        const num = ['quantity', 'unitPrice', 'totalPrice', 'totalPaid'].includes(name)
-            ? Number(value) || 0
+    const handleInputChange = (name: string, value: string | number) => {
+        // Handle numeric conversion if needed, though usually passed as string from TextInput or number from selection
+        const numValue = (typeof value === 'string' && ['quantity', 'unitPrice', 'totalPrice', 'totalPaid'].includes(name))
+            ? (Number(value) || 0)
             : value
 
-        const updated = { ...formData, [name]: num }
+        let updated = { ...formData, [name]: numValue }
+
+        // Auto-calc logic
+        const qty = Number(updated.quantity) || 0
+        const unit = Number(updated.unitPrice) || 0
+        const total = Number(updated.totalPrice) || 0
+
         if (name === 'quantity' || name === 'unitPrice') {
-            updated.totalPrice = (updated.quantity || 0) * (updated.unitPrice || 0)
+            if (qty >= 0 && unit >= 0) {
+                updated.totalPrice = parseFloat((qty * unit).toFixed(4))
+            }
+        } else if (name === 'totalPrice') {
+            if (qty > 0) {
+                updated.unitPrice = parseFloat((total / qty).toFixed(4))
+            }
         }
-        if (name === 'totalPaid' && updated.totalPaid > updated.totalPrice) {
+
+        if (name === 'totalPaid' && typeof updated.totalPaid === 'number' && typeof updated.totalPrice === 'number' && updated.totalPaid > updated.totalPrice) {
             updated.totalPaid = updated.totalPrice
         }
 
         setFormData(updated)
+        // Clear error if exists
         if (Object.keys(formErrors).length && formErrors[name]) {
             setFormErrors({ ...formErrors, [name]: '' })
         }
     }
 
-    // Auto-sync between quantity, unitPrice, and totalPrice
-    useEffect(() => {
-        const qty = Number(formData.quantity) || 0
-        const unit = Number(formData.unitPrice) || 0
-        const total = Number(formData.totalPrice) || 0
-        const active = document.activeElement?.getAttribute('name')
-
-        if ((active === 'quantity' || active === 'unitPrice') && qty > 0 && unit >= 0) {
-            const newTotal = parseFloat((qty * unit).toFixed(4))
-            if (Math.abs(newTotal - total) > 0.0001) {
-                setFormData((p) => ({ ...p, totalPrice: newTotal }))
-            }
+    const handleFormSubmit = () => {
+        if (onOrderCreated) {
+            onOrderCreated({
+                stockTitle: formData.stockTitle,
+                quantity: formData.quantity,
+                totalPrice: formData.totalPrice,
+                customerId: formData.customerId,
+                stockId: formData.stockId,
+                unitPrice: formData.unitPrice,
+                productIds: formData.productIds,
+                totalAmountPaid: formData.totalPaid,
+            })
+        } else {
+            console.warn('onOrderCreated is not defined')
         }
-
-        if (active === 'totalPrice' && qty > 0) {
-            const newUnit = parseFloat((total / qty).toFixed(4))
-            if (Math.abs(newUnit - unit) > 0.0001) {
-                setFormData((p) => ({ ...p, unitPrice: newUnit }))
-            }
-        }
-    }, [formData.quantity, formData.unitPrice, formData.totalPrice])
-
-    const handleFormSubmit = (e?: React.FormEvent) => {
-        e?.preventDefault()
-        onOrderCreated({
-            stockTitle: formData.stockTitle,
-            quantity: formData.quantity,
-            totalPrice: formData.totalPrice,
-            customerId: formData.customerId,
-            stockId: formData.stockId,
-            unitPrice: formData.unitPrice,
-            productIds: formData.productIds,
-            totalAmountPaid: formData.totalPaid,
-        })
         resetForm()
         setIsModalOpen(false)
     }
@@ -132,7 +142,7 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
 
     const loadProductOptions = async (search: string, _: any, additional: any) => {
         const page = additional?.page || 1
-        const data = await getProduct(stock?.stockId, 'AvailbleForSale', page, 10, search)
+        const data: any = await getProduct(stock?.stockId, 'AvailbleForSale', page, 10, search)
         const options = data.items.map((p: any) => ({
             value: p.id,
             label: `${p.barcode} | ${p.name} | ${stock?.suppliarName}`,
@@ -146,7 +156,7 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
 
     const loadCustomerOptions = async (search: string, _: any, additional: any) => {
         const page = additional?.page || 1
-        const data = await getCustomers(page, 10, search)
+        const data: any = await getCustomers(page, 10, search)
         const options = data.items.map((c: any) => ({
             value: c.id,
             label: c.name,
@@ -202,7 +212,9 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
     }
 
     const handleSave = (order: any) => {
-        onOrderCreated(order)
+        if (onOrderCreated) {
+            onOrderCreated(order)
+        }
     }
 
     const handleCloseModal = () => {
@@ -233,7 +245,6 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
     }
 
     const handleView = (id: string) => {
-        // Navigation logic here if needed, or pass navigation prop
         console.log("View order", id)
     }
 
@@ -243,7 +254,6 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
             setIsLoading(true)
             const data: any = await getAllOrders(currentPage, pageSize, searchTerm)
             setOrders(data.items)
-            setOrders(data.items)
             setTotalCount(data?.totalCount ?? data.items.length)
             setTotalPages(Math.ceil((data?.totalCount ?? data.items.length) / pageSize))
         } finally {
@@ -251,21 +261,22 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
         }
     }, [currentPage, pageSize, searchTerm])
 
-    // ✅ Load data
+    // ✅ Effect for Debounce Search
     useEffect(() => {
-        fetchOrders()
+        const t = setTimeout(() => {
+            fetchOrders()
+        }, 350)
+        return () => clearTimeout(t)
     }, [fetchOrders])
 
-    // ✅ Debounce search
-    useEffect(() => {
-        const t = setTimeout(fetchOrders, 350)
-        return () => clearTimeout(t)
-    }, [searchTerm, currentPage, pageSize, fetchOrders])
-
-    // ✅ Reset pagination on search/filter change
+    // ✅ Reset pagination on search change (handled by effect dependency on searchTerm via fetchOrders? No, fetchOrders changes when searchTerm changes)
+    // Actually if searchTerm changes, fetchOrders updates.
+    // The debounce effect triggers.
+    // But we might want to reset page to 1 when search changes.
     useEffect(() => {
         setCurrentPage(1)
     }, [searchTerm, statusFilter, pageSize])
+
 
     // ✅ Calculate stats
     const stats = useMemo(
@@ -299,13 +310,13 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
         })
     }, [orders, searchTerm, statusFilter])
 
-    // ✅ Return hook values
     return {
         // State
         isLoading,
         orders,
         totalCount,
         currentPage,
+        pageSize,
         itemsPerPage,
         searchTerm,
         statusFilter,
@@ -351,4 +362,4 @@ const useOders = (onOrderCreated?: (order: any) => void, stock?: any) => {
     }
 }
 
-export default useOders
+export default useOrders
