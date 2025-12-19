@@ -1,3 +1,5 @@
+import { LoginScreenNavigationProp } from "./types";
+
 export interface Customer {
     id?: string;
     name: string;
@@ -15,3 +17,8 @@ export interface Supplier {
     activeStatus?: boolean;
     [key: string]: any;
 }
+export interface LoginScreenProps {
+  navigation: LoginScreenNavigationProp;
+}
+
+export const MainLogo = require("../../assets/MainLogo.png");
