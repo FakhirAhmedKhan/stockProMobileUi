@@ -188,7 +188,7 @@ export const Pagination = ({
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        padding: 32,
         backgroundColor: '#fff',
     },
     topRow: {

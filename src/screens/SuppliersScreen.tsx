@@ -1,12 +1,11 @@
-import ExcelLikeTable from '@/components/ExcelLikeTable';
-import { SupplierFormInputs } from '@/components/Forms/SupplierFormInputs';
-import { MainHeader } from '@/components/MainHeader';
-import { SupplierModalForm } from '@/components/Models/Suppliers.Model';
-import { Pagination } from '@/components/Pagination';
-import SearchBar from '@/components/SearchBar';
-import { useSuppliers } from '@/hooks/useSuppliers';
-import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { SupplierFormInputs } from "@/components/Forms/SupplierFormInputs";
+import { SupplierModalForm } from "@/components/Models/Suppliers.Model";
+import { ActivityIndicator, Text, View } from "react-native";
+import ExcelLikeTable from "@/components/ExcelLikeTable";
+import { MainHeader } from "@/components/MainHeader";
+import { Pagination } from "@/components/Pagination";
+import { useSuppliers } from "@/hooks/useSuppliers";
+import SearchBar from "@/components/SearchBar";
 
 const SuppliersScreen: React.FC = () => {
   const {
@@ -23,29 +22,12 @@ const SuppliersScreen: React.FC = () => {
     suppliers,
     isLoading,
     fetchError,
-    totalCount,
     currentPage,
     setCurrentPage,
+    totalPages,
+    isModalOpen,
+    setIsModalOpen,
   } = useSuppliers();
-
-  const handleEdit = useCallback((entity: any) => {
-    console.log('Edit:', entity);
-  }, []);
-
-  const handleView = useCallback((id: string) => {
-    console.log('View:', id);
-  }, []);
-
-  const handleDelete = useCallback((id: string) => {
-    console.log('Delete:', id);
-  }, []);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(totalCount / pageSize)),
-    [totalCount, pageSize]
-  );
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -61,10 +43,7 @@ const SuppliersScreen: React.FC = () => {
           showButton={true}
           showRangePicker={false}
         />
-        <SearchBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       </View>
 
       <View className="flex-1 px-6 pt-4">
@@ -87,12 +66,10 @@ const SuppliersScreen: React.FC = () => {
           <ExcelLikeTable
             data={suppliers}
             showStatus={true}
-            showButton={true}
+            showButton={false}
             showButtonNavigation={true}
             showDelBtn={true}
-            onEdit={handleEdit}
-            handleViewDetails={handleView}
-            handleDeleteStock={handleDelete}
+            columnsToHide={["id", "email", "userId", "createdAt", "action"]}
           />
         )}
       </View>
@@ -120,17 +97,14 @@ const SuppliersScreen: React.FC = () => {
         </View>
       )}
 
-      <View className="p-6">
-        <Pagination
-          pageNumber={currentPage}
-          setPageNumber={setCurrentPage}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          totalPages={totalPages}
-          text="Items per page"
-        />
-      </View>
-
+      <Pagination
+        pageNumber={currentPage}
+        setPageNumber={setCurrentPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        totalPages={totalPages}
+        text="Items per page"
+      />
     </View>
   );
 };

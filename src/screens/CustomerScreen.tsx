@@ -67,12 +67,10 @@ const CustomerScreen: React.FC = () => {
           <ExcelLikeTable
             data={customers}
             showStatus={true}
-            showButton={true}
+            showButton={false}
             showButtonNavigation={true}
             showDelBtn={true}
-            onEdit={handleEdit}
-            handleViewDetails={() => {}}
-            handleDeleteStock={() => {}}
+            columnsToHide={["id", "email", "userId", "createdAt", "action"]}
           />
         )}
       </View>

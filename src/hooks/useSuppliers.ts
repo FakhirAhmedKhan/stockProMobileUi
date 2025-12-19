@@ -1,7 +1,7 @@
 import { getUserId } from '@/services/AuthService'
 import { createSupplier, getSupplier } from '@/services/SupplierService'
 import { Supplier } from '@/types/interface'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { defaultFormData, SupplierApiResponse, useDebounce } from './useDebounce'
 
 export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s: Supplier) => void) {
@@ -17,10 +17,14 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
     const [showSuccess, setShowSuccess] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Safety: Track timeout to clear it if component unmounts
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+    const totalPages = useMemo(
+        () => Math.max(1, Math.ceil(totalCount / pageSize)),
+        [totalCount, pageSize]
+    );
     const debouncedSearch = useDebounce(searchTerm, 300)
 
     // FIX: React Native input handler
@@ -119,5 +123,8 @@ export function useSuppliers(isOpen?: boolean, onClose?: () => void, onSave?: (s
         totalCount,
         currentPage,
         setCurrentPage,
+        totalPages,
+        isModalOpen,
+         setIsModalOpen,
     }
 }
