@@ -43,7 +43,7 @@ export async function postStock(stockData) {
 //     return response.data
 // }
 
-export async function deleteStock(stockId) {
+export async function deleteStock(stockId:string) {
     return ApiService.fetchDataWithAxios({
         url: `${endpointConfig.stocks}/${stockId}`,
         method: 'delete',

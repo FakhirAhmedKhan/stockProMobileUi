@@ -97,7 +97,7 @@ const TableRow = React.memo(({
       {showButtonNavigation && (
         <View className="justify-center items-center p-3 border-r border-gray-200" style={{ width: ACTION_COL_WIDTH }}>
           <View className="flex-row gap-2">
-            <ActionButton onPress={() => handleViewDetails?.(item.id)}>
+            <ActionButton onPress={() => handleViewDetails?.(String(item.id || item.stockId || item.productId || ''))}>
               <Eye size={18} color="#374151" />
             </ActionButton>
             {showDelBtn && (
