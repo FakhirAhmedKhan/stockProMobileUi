@@ -200,8 +200,8 @@ const ChromeTabBar = ({
 };
 
 // Main Screen
-const StockDetailScreen = ({ navigation }: any) => {
-  const { stock, isLoading, fetchStockDetails } = useStock();
+const StockDetailScreen = ({ navigation, route }: any) => {
+  const { stock, isLoading, fetchStockDetails } = useStock(route.params?.stockId);
   const [activeTab, setActiveTab] = useState('Products');
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -240,7 +240,8 @@ const StockDetailScreen = ({ navigation }: any) => {
     TotalAmountPaid: 8000,
     RemainingAmount: 4050,
     category: "Electronics",
-    id: "1"
+    id: "1",
+    stockId: "1" // Ensure stockId is also present for tabs
   };
 
   const percentage = Math.round((displayStock.quantityAvailable / displayStock.totalQuantity) * 100) || 0;

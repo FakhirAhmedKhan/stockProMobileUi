@@ -1,5 +1,4 @@
-import { useProduct } from '@/hooks/useProduct';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import useProduct from '@/hooks/useProduct';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -43,10 +42,10 @@ const getColorCode = (colorName: string) => {
     }
 };
 
-const ProductDetailScreen = () => {
-    const { product, isLoading } = useProduct(); // Assuming hook handles single product fetch via ID in route
-    const navigation = useNavigation();
-    const route = useRoute<any>();
+const ProductDetailScreen = ({ route, navigation }: any) => {
+    // Get parameters from route prop instead of useRoute hook
+    const productId = route.params?.id;
+    const { product, isLoading } = useProduct(productId);
     const [activeTab, setActiveTab] = useState('Orders');
 
     // Initial loading state
@@ -64,7 +63,7 @@ const ProductDetailScreen = () => {
         productId: "0607820889107",
         status: "Available",
         storage: "1",
-        color: "1", // Assuming color code or name
+        color: "1",
         condition: "—",
         unitPrice: 1,
         totalCost: 1,

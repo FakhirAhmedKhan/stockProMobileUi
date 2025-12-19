@@ -11,7 +11,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native'
 
 const useRepairing = (stock: any, onStockUpdated: () => void) => {
-    const { addError } = useErrorPopup()
+    // const { addError } = useErrorPopup() // Non-existent hook removed
 
     const [repairingData, setRepairingData] = useState<RepairingDto[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -65,11 +65,11 @@ const useRepairing = (stock: any, onStockUpdated: () => void) => {
             setRepairingData(list)
         } catch (err) {
             console.error('Error fetching repairing data:', err)
-            addError('Failed to fetch repairing data.', 'api')
+            Alert.alert('Error', 'Failed to fetch repairing data.')
         } finally {
             setIsLoading(false)
         }
-    }, [stock?.stockId, addError])
+    }, [stock?.stockId])
 
     useEffect(() => {
         fetchRepairing()
@@ -291,9 +291,9 @@ const useRepairing = (stock: any, onStockUpdated: () => void) => {
         } catch (error: any) {
             console.error('Error saving repair request:', error)
             if (error.response?.data?.Message) {
-                addError(error.response.data.Message, 'api')
+                Alert.alert('Error', error.response.data.Message)
             } else {
-                addError('Something went wrong while saving repair.', 'api')
+                Alert.alert('Error', 'Something went wrong while saving repair.')
             }
         } finally {
             setIsSubmitting(false)

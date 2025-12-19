@@ -1,9 +1,13 @@
-import ExcelLikeTable from '@/components/ExcelLikeTable'
-import { MainHeader } from '@/components/MainHeader'
-import { Pagination } from '@/components/Pagination'
-import SearchBar from '@/components/SearchBar'
-import useOrders from '@/hooks/useOrders'
-import { ActivityIndicator, Text, View } from 'react-native'
+import React, { useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
+import ExcelLikeTable from "@/components/ExcelLikeTable";
+import { MainHeader } from "@/components/MainHeader";
+import OrderModel from "@/components/Models/OrderModel";
+import { Pagination } from "@/components/Pagination";
+import SearchBar from "@/components/SearchBar";
+import useOrders from "@/hooks/useOrders";
+import useOrderForm from '@/hooks/useOrderForm';
+import { createOrder, editOrder } from '@/services/OrderService';
 
 export const OrdersTab = ({ stock }: { stock: any }) => {
     const {
@@ -11,17 +15,68 @@ export const OrdersTab = ({ stock }: { stock: any }) => {
         isLoading,
         searchTerm,
         setSearchTerm,
-        isModalOpen,
-        setIsModalOpen,
         currentPage,
         setCurrentPage,
         pageSize,
         setPageSize,
         totalPages,
-        handleEdit,
         handleDelete,
-        handleView
-    } = useOrders(undefined, stock)
+        handleView,
+        handleEdit: onEditOrder,
+        fetchOrders,
+        selectedOrder,
+        setSelectedOrder,
+    } = useOrders(stock?.stockId);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleFormSubmit = async (orderData: any) => {
+        try {
+            const payload = { ...orderData, stockId: stock.stockId };
+            if (selectedOrder) {
+                await editOrder({ ...payload, id: selectedOrder.id });
+            } else {
+                await createOrder(payload);
+            }
+            fetchOrders();
+            handleCloseModal();
+        } catch (error) {
+            console.error("Failed to save order", error);
+        }
+    };
+
+    const {
+        formData,
+        formErrors,
+        isFormLoading,
+        handleInputChange,
+        handleFormSubmit: submitForm,
+        loadProductOptions,
+        loadCustomerOptions,
+        setEditingOrder,
+        resetForm,
+        profit,
+        remaining,
+        margin,
+    } = useOrderForm(handleFormSubmit, stock);
+
+    const handleOpenModal = () => {
+        setSelectedOrder(null);
+        resetForm();
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedOrder(null);
+        resetForm();
+    };
+
+    const handleEdit = (order: any) => {
+        onEditOrder(order);
+        setEditingOrder(order);
+        setIsModalOpen(true);
+    };
 
     return (
         <View>
@@ -30,15 +85,9 @@ export const OrdersTab = ({ stock }: { stock: any }) => {
                     H1Heading="Orders"
                     Paragraph="Track orders for this product"
                     BtnText="Add Order"
-                    Updates="0 Updates"
-                    StutsUpdates="Active"
-                    fullName="John Doe"
-                    setIsModalOpen={setIsModalOpen}
+                    onButtonPress={handleOpenModal}
                     showButton={true}
-                    showRangePicker={false}
-                    onPress={() => setIsModalOpen(true)}
                 />
-
                 <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             </View>
             <View className="flex-1 px-6 pt-4">
@@ -75,8 +124,24 @@ export const OrdersTab = ({ stock }: { stock: any }) => {
                     text="Orders per page"
                 />
             </View>
-        </View>
-    )
-}
 
-export default OrdersTab
+            <OrderModel
+                stock={stock}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                handleFormSubmit={submitForm}
+                formData={formData}
+                formErrors={formErrors}
+                isFormLoading={isFormLoading}
+                handleInputChange={handleInputChange}
+                loadProductOptions={loadProductOptions}
+                loadCustomerOptions={loadCustomerOptions}
+                profit={profit}
+                remaining={remaining}
+                margin={margin}
+            />
+        </View>
+    );
+};
+
+export default OrdersTab;

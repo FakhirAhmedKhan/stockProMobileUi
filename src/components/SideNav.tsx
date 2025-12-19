@@ -1,9 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useRef } from 'react';
 import { FileText, Home, Package, Settings, ShoppingBag, Users } from 'lucide-react-native';
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { navigate, navigationRef } from '../navigation/NavigationService';
 
-const {width: WINDOW_WIDTH} = Dimensions.get('window');
+const { width: WINDOW_WIDTH } = Dimensions.get('window');
 const NAV_WIDTH = Math.min(300, Math.floor(WINDOW_WIDTH * 0.72));
 
 interface SideNavProps {
@@ -16,44 +16,12 @@ const MenuItem: React.FC<{
   icon: React.ReactNode;
   routeName: string;
   onPress?: () => void;
-}> = ({label, icon, routeName, onPress}) => {
-  const navigation: any = useNavigation();
-
-  const canNavigateTo = (state: any, name: string): boolean => {
-    if (!state) return false;
-    if (Array.isArray(state.routeNames) && state.routeNames.includes(name)) return true;
-    if (Array.isArray(state.routes)) {
-      for (const r of state.routes) {
-        if (r.name === name) return true;
-        if (r.state && canNavigateTo(r.state, name)) return true;
-      }
-    }
-    return false;
-  };
-
+}> = ({ label, icon, routeName, onPress }) => {
   const handlePress = () => {
-    // Try to find a navigator in the parent chain that exposes the routeName
-    let nav: any = navigation;
-    while (nav) {
-      try {
-        const st = nav.getState && nav.getState();
-        if (st && Array.isArray(st.routeNames) && st.routeNames.includes(routeName)) {
-          nav.navigate(routeName as never);
-          onPress?.();
-          return;
-        }
-      } catch (e) {
-        // ignore
-      }
-      nav = nav.getParent && nav.getParent();
-    }
-
-    // Fallback: try to navigate into root 'Dashboard' stack with params
-    try {
-      navigation.navigate('Dashboard' as never, { screen: routeName } as never);
-    } catch (e) {
-      // final fallback: attempt direct navigate
-      navigation.navigate(routeName as never);
+    // Check if navigation is ready and attempt to navigate via NavigationService
+    // This avoids "no navigation context" errors
+    if (navigationRef.isReady()) {
+      navigate(routeName);
     }
     onPress?.();
   };
@@ -66,7 +34,7 @@ const MenuItem: React.FC<{
   );
 };
 
-const SideNav: React.FC<SideNavProps> = ({open, onClose}) => {
+const SideNav: React.FC<SideNavProps> = ({ open, onClose }) => {
   const translateX = useRef(new Animated.Value(-NAV_WIDTH)).current;
 
   useEffect(() => {
@@ -91,7 +59,7 @@ const SideNav: React.FC<SideNavProps> = ({open, onClose}) => {
       <Animated.View
         style={[
           styles.container,
-          {width: NAV_WIDTH, transform: [{translateX}]},
+          { width: NAV_WIDTH, transform: [{ translateX }] },
         ]}
       >
         <View style={styles.brandWrap}>
@@ -144,9 +112,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f3f4f6',
     marginBottom: 8,
   },
-  brand: {fontSize: 20, fontWeight: '700', color: '#111827'},
-  brandSub: {fontSize: 12, color: '#6b7280'},
-  menu: {marginTop: 12},
+  brand: { fontSize: 20, fontWeight: '700', color: '#111827' },
+  brandSub: { fontSize: 12, color: '#6b7280' },
+  menu: { marginTop: 12 },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -154,8 +122,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 8,
   },
-  iconWrap: {width: 28, alignItems: 'center'},
-  label: {marginLeft: 12, fontSize: 16, color: '#374151', fontWeight: '600'},
+  iconWrap: { width: 28, alignItems: 'center' },
+  label: { marginLeft: 12, fontSize: 16, color: '#374151', fontWeight: '600' },
 });
 
 export default SideNav;

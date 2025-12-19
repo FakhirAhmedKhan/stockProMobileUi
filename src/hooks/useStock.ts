@@ -1,11 +1,13 @@
+import { navigate } from '@/navigation/NavigationService'
 import { createOrder } from '@/services/OrderService'
 import { deleteStock, getStockDetails, getStocks, postStock } from '@/services/StockService'
 import { getSupplier } from '@/services/SupplierService'
-import { useNavigation, useRoute } from '@react-navigation/native'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert } from 'react-native'
 
-const useStock = () => {
+// Note: Replaced useNavigation and useRoute with manual params and NavigationService
+// to avoid "Couldn't find a navigation context" errors in complex layouts.
+const useStock = (idFromParams?: string) => {
     /* -------------------------------------------------------------------------- */
     /* 📝 State                                                                   */
     /* -------------------------------------------------------------------------- */
@@ -19,15 +21,13 @@ const useStock = () => {
     const [totalPages, setTotalPages] = useState(1)
     const [showSuccess, setShowSuccess] = useState(false)
 
-    const route = useRoute<any>()
-    const stockId = route.params?.stockId
+    // Use passed id or fallback to state
+    const stockId = idFromParams
 
     const [isPanelVisible, setIsPanelVisible] = useState(true)
     const [activeTab, setActiveTab] = useState('Product')
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-
-    const navigation = useNavigation<any>()
 
     /* -------------------------------------------------------------------------- */
     /* 📝 Form State (Manual handling)                                            */
@@ -72,7 +72,7 @@ const useStock = () => {
     }, [formData.category])
 
     /* -------------------------------------------------------------------------- */
-    /* � Auto-Calculation & Input Handling                                       */
+    /* 🛠 Auto-Calculation & Input Handling                                       */
     /* -------------------------------------------------------------------------- */
 
     const handleInputChange = (field: string, value: any) => {
@@ -91,13 +91,11 @@ const useStock = () => {
             }
 
             // If Total Price is manually entered, update Unit Price
-            // Note: This priority logic is simple; if user edits Total Price, Unit Price adjusts.
             if (field === "totalPrice" && q > 0) {
                 updated.unitPrice = (t / q).toFixed(2)
             }
 
             // Always update Remaining
-            // Recalculate t in case it was just updated above
             const currentTotal = parseFloat(String(updated.totalPrice)) || 0
             updated.totalRemaining = (currentTotal - paid).toFixed(2)
 
@@ -229,7 +227,7 @@ const useStock = () => {
         }
     }
 
-    const handleDeleteStock = async (stockId: string) => {
+    const handleDeleteStock = async (id: string) => {
         Alert.alert(
             "Delete Stock",
             "Are you sure you want to delete this stock item?",
@@ -241,7 +239,7 @@ const useStock = () => {
                     onPress: async () => {
                         setIsLoading(true)
                         try {
-                            await deleteStock(stockId)
+                            await deleteStock(id)
                             await fetchStocks()
                             setShowSuccess(true)
                             setTimeout(() => setShowSuccess(false), 3000)
@@ -257,8 +255,8 @@ const useStock = () => {
         )
     }
 
-    const handleViewDetails = (stockId: string) => {
-        navigation.navigate('StockDetails', { stockId })
+    const handleViewDetails = (id: string) => {
+        navigate('StockDetails', { stockId: id })
     }
 
     const handleOrderCreated = useCallback(
@@ -276,9 +274,9 @@ const useStock = () => {
     const filteredStocks = useMemo(() => {
         if (!searchTerm.trim()) return stocks
 
-        return stocks.filter((stock) => {
-            const title = stock?.stockTitle?.toLowerCase() || ''
-            const supplier = stock?.suppliarName?.toLowerCase() || ''
+        return stocks.filter((s) => {
+            const title = s?.stockTitle?.toLowerCase() || ''
+            const supplier = s?.suppliarName?.toLowerCase() || ''
             const search = searchTerm.toLowerCase()
             return title.includes(search) || supplier.includes(search)
         })
@@ -345,7 +343,7 @@ const useStock = () => {
 
         handleTabClick,
 
-        // Form Props - Replaced react-hook-form
+        // Form Props
         formData,
         handleInputChange,
         handleSubmit,

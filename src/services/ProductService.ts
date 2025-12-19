@@ -1,6 +1,6 @@
-import endpointConfig from '@/constants/endpoint.config'
-import { useSessionUser } from '@/Store/authStore'
-import ApiService from './ApiService'
+import endpointConfig from "@/constants/endpoint.config"
+import ApiService from "./ApiService"
+import { useSessionUser } from "@/Store/authStore"
 
 export async function getProduct(
     stockId?: string,
@@ -10,7 +10,7 @@ export async function getProduct(
     search: string = '',
 ) {
     const params = new URLSearchParams({
-        id: stockId || '',
+        id: stockId || '',  
         filter,
         pageNumber: pageNumber.toString(),
         pageSize: pageSize.toString(),
@@ -31,7 +31,7 @@ export async function GetAllProduct(
     const userId = user?.userId || ''
 
     return ApiService.fetchDataWithAxios({
-        url: `${endpointConfig.GetAllProduct}?userId=${userId}&pageNumber=${pageNumber}&pageSize=${pageSize}&search=${searchTerm}`,
+        url: `${endpointConfig.GetAllProduct}/${userId}?pageNumber=${pageNumber}&pageSize=${pageSize}&search=${searchTerm}`, // ✅ userId in path
         method: 'get',
     })
 }
@@ -41,14 +41,14 @@ export async function GetProductById(productId: string) {
         method: 'get',
     })
 }
-export async function createProduct(data: any) {
+export async function createProduct(data) {
     return ApiService.fetchDataWithAxios({
         url: endpointConfig.Product,
         method: 'post',
         data: data,
     })
 }
-export async function editProduct(data: any) {
+export async function editProduct(data) {
     return ApiService.fetchDataWithAxios({
         url: `${endpointConfig.Product}/${data.id}`,
         method: 'put',

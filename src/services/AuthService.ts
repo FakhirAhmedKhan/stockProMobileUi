@@ -40,7 +40,9 @@ export const login = async (
         });
 
         const token = response?.token;
-        const userId = response?.user?.id;
+        // Be defensive about user id shape from backend (id, userId, userID, etc.)
+        const rawUser: any = response?.user || {};
+        const userId = rawUser.id ?? rawUser.userId ?? rawUser.userID;
 
         if (!token) {
             return {
@@ -51,7 +53,7 @@ export const login = async (
 
         await AsyncStorage.setItem(TOKEN_NAME_IN_STORAGE, token);
         if (userId) {
-            await AsyncStorage.setItem(USER_ID_IN_STORAGE, userId);
+            await AsyncStorage.setItem(USER_ID_IN_STORAGE, String(userId));
         }
 
         return {

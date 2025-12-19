@@ -2,7 +2,7 @@ import ExcelLikeTable from '@/components/ExcelLikeTable'
 import { MainHeader } from '@/components/MainHeader'
 import { Pagination } from '@/components/Pagination'
 import SearchBar from '@/components/SearchBar'
-import { useProduct } from '@/hooks/useProduct'
+import useProduct from '@/hooks/useProduct'
 import { ActivityIndicator, Text, View } from 'react-native'
 
 export const ProductTab = ({ stockId }: { stockId: string }) => {
@@ -21,8 +21,9 @@ export const ProductTab = ({ stockId }: { stockId: string }) => {
         handleEdit,
         handleDelete,
         handleViewDetails,
-        stats
+        stats,
     } = useProduct(stockId)
+
 
     return (
         <View>
