@@ -1,14 +1,17 @@
+import { ActivityIndicator, Text, View } from 'react-native'
 import ExcelLikeTable from '@/components/ExcelLikeTable'
 import { MainHeader } from '@/components/MainHeader'
 import { Pagination } from '@/components/Pagination'
 import SearchBar from '@/components/SearchBar'
-import useProduct from '@/hooks/useProduct'
-import { ActivityIndicator, Text, View } from 'react-native'
+import useProducts from '@/hooks/useProduct'
+import { useState } from 'react'
 
 export const ProductTab = ({ stockId }: { stockId: string }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const {
-        isLoading,
         products,
+        isLoading,
         currentPage,
         pageSize,
         totalPages,
@@ -16,13 +19,10 @@ export const ProductTab = ({ stockId }: { stockId: string }) => {
         setSearchTerm,
         setPageSize,
         setPageNumber,
-        isModalOpen,
-        setIsModalOpen,
-        handleEdit,
         handleDelete,
         handleViewDetails,
-        stats,
-    } = useProduct(stockId)
+    } = useProducts(stockId)
+
 
 
     return (
@@ -60,7 +60,6 @@ export const ProductTab = ({ stockId }: { stockId: string }) => {
                         showButton={true}
                         showButtonNavigation={true}
                         showDelBtn={true}
-                        onEdit={handleEdit}
                         handleViewDetails={handleViewDetails}
                         handleDeleteStock={handleDelete}
                     />

@@ -1,13 +1,13 @@
-import { View, Text, ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Text, View } from 'react-native'
 import ExcelLikeTable from '@/components/ExcelLikeTable'
 import { MainHeader } from '@/components/MainHeader'
 import { Pagination } from '@/components/Pagination'
 import SearchBar from '@/components/SearchBar'
-import useProduct from '@/hooks/useProduct'
+import useProducts from '@/hooks/useProduct'
 
 const ProductScreen = () => {
   const {
-    filteredProducts,
+    products,
     isLoading,
     searchTerm,
     setSearchTerm,
@@ -15,16 +15,14 @@ const ProductScreen = () => {
     pageSize,
     setPageSize,
     totalPages,
-    goToPage,
-    handleEdit,
+    setPageNumber,
     handleViewDetails,
     handleDelete,
     stats,
-  } = useProduct()
+  } = useProducts()
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* Header */}
       <View className="p-6 pb-0">
         <MainHeader
           H1Heading="Product Overview"
@@ -42,14 +40,13 @@ const ProductScreen = () => {
         />
       </View>
 
-      {/* Content */}
       <View className="flex-1 px-6 pt-4">
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" />
             <Text className="mt-3 text-gray-500">Loading...</Text>
           </View>
-        ) : filteredProducts.length === 0 ? (
+        ) : products.length === 0 ? (
           <View className="flex-1 items-center justify-center">
             <Text className="text-gray-500">
               {searchTerm
@@ -59,22 +56,29 @@ const ProductScreen = () => {
           </View>
         ) : (
           <ExcelLikeTable
-            data={filteredProducts}
+            data={products}
             showStatus
             showButton
             showButtonNavigation
             showDelBtn
-            onEdit={handleEdit}
             handleViewDetails={handleViewDetails}
             handleDeleteStock={handleDelete}
+            columnsToHide={[
+              'id',
+              'barcode', 
+              'stockId',
+              'userId',
+              'status',
+              'createdAt',
+              'updatedAt',
+            ]}  
           />
         )}
       </View>
 
-      {/* Pagination */}
       <Pagination
         pageNumber={currentPage}
-        setPageNumber={goToPage}
+        setPageNumber={setPageNumber}
         pageSize={pageSize}
         setPageSize={setPageSize}
         totalPages={totalPages}

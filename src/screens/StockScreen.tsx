@@ -1,12 +1,11 @@
-import ExcelLikeTable from "@/components/ExcelLikeTable";
-import { StockCreateInputs } from "@/components/Forms/StockFromInputs";
-import { MainHeader } from "@/components/MainHeader";
+import { ActivityIndicator, Text, View } from "react-native";
 import StockCreateModal from "@/components/Models/StockModel";
+import ExcelLikeTable from "@/components/ExcelLikeTable";
+import { MainHeader } from "@/components/MainHeader";
 import { Pagination } from "@/components/Pagination";
 import SearchBar from "@/components/SearchBar";
 import useStock from "@/hooks/useStock";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, Text, View } from "react-native";
 
 const StockScreen: React.FC = () => {
   const {
@@ -22,8 +21,8 @@ const StockScreen: React.FC = () => {
     handleDeleteStock,
     handleViewDetails,
     isModalOpen,
-    setModalOpen, // Ensure this is returned from hook
-    submitStock,  // Ensure this is returned from hook
+    setModalOpen,
+    submitStock,
     loadSuppliers,
     showSuccess,
   } = useStock();
@@ -48,7 +47,7 @@ const StockScreen: React.FC = () => {
 
   const onSubmit = (data: any) => {
     submitStock(data);
-    reset(); 
+    reset();
   };
 
   return (
@@ -86,12 +85,25 @@ const StockScreen: React.FC = () => {
           <ExcelLikeTable
             data={filteredStocks}
             showStatus={true}
-            showButton={true}
+            showButton={false}
             showButtonNavigation={true}
             showDelBtn={true}
             onEdit={(item: any) => console.log('Edit Stock', item)}
             handleViewDetails={handleViewDetails}
             handleDeleteStock={handleDeleteStock}
+            columnsToHide={[
+              'id',
+              'barcode',
+              'stockId',
+              'userId',
+              'status',
+              'createdAt',
+              'updatedAt',
+              'supplierId',
+              'lastUpdated',
+              'lastUpdatedDate',
+              'actions',
+            ]}
           />
         )}
       </View>

@@ -10,12 +10,12 @@ import {
   View
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import CustomersTab from './StockDetailTabs/CustomersTab';
-import ImagesTab from './StockDetailTabs/ImagesTab';
-import OrdersTab from './StockDetailTabs/OrdersTab';
-import ProductTab from './StockDetailTabs/ProductTab';
-import RepairsTab from './StockDetailTabs/RepairsTab';
-import ReturnsTab from './StockDetailTabs/ReturnsTab';
+import CustomersTab from './CustomersTab';
+import ImagesTab from './ImagesTab';
+import OrdersTab from './OrdersTab';
+import ProductTab from './ProductTab';
+import RepairsTab from './RepairsTab';
+import ReturnsTab from './ReturnsTab';
 
 const { width } = Dimensions.get('window');
 

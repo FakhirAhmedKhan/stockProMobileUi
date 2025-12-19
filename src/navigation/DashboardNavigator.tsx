@@ -7,11 +7,10 @@ import CustomerScreen from '../screens/CustomerScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import InvoiceScreen from '../screens/InvoiceScreen';
 import OrdersScreen from '../screens/OrdersScreen';
-import ProductDetailScreen from '../screens/ProductDetailScreen';
-import ProductScreen from '../screens/ProductScreen';
+import {ProductDetailScreen} from '../screens/ProductScreen/ProductDetailScreen';
+import ProductScreen from '../screens/ProductScreen/ProductScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import ScreenC from '../screens/ScreenC';
-import StockDetailScreen from '../screens/StockDetailScreen';
+import StockDetailScreen from '../screens/StockDetailTabs/StockDetailScreen';
 import StockScreen from '../screens/StockScreen';
 import SuppliersScreen from '../screens/SuppliersScreen';
 
@@ -24,7 +23,6 @@ export type DashboardTabParamList = {
   Orders: undefined;
   Invoice: undefined;
   Profile: undefined;
-  ScreenC: undefined;
   StockDetails: { stockId: string };
   ProductDetails: { id: string };
 };
@@ -64,7 +62,6 @@ const DashboardNavigator: React.FC = () => {
         <Stack.Screen name="Invoice" component={InvoiceScreen} options={{ title: 'Invoice' }} />
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
         <Stack.Screen name="StockDetails" component={StockDetailScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="ScreenC" component={ScreenC} options={{ title: 'Settings' }} />
       </Stack.Navigator>
     </View>
   );
