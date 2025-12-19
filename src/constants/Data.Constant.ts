@@ -19,12 +19,12 @@ export const colorMap: Record<string, string> = {
 export const { width } = Dimensions.get('window');
 
 export const TABS = [
-  { id: 'Products', label: 'Products', icon: 'cube-outline', component: ProductTab },
-  { id: 'Orders', label: 'Orders', icon: 'cart-outline', component: OrdersTab },
-  { id: 'Customers', label: 'Customers', icon: 'people-outline', component: CustomersTab },
-  { id: 'Returns', label: 'Returns', icon: 'return-up-back-outline', component: ReturnsTab },
-  { id: 'Repairs', label: 'Repairs', icon: 'hammer-outline', component: RepairsTab },
-  { id: 'Images', label: 'Images', icon: 'images-outline', component: ImagesTab },
+  { id: "Products", label: "Products", icon: "📦", component: ProductTab },
+  { id: "Orders", label: "Orders", icon: "🛒", component: OrdersTab },
+  { id: "Customers", label: "Customers", icon: "👥", component: CustomersTab },
+  { id: "Returns", label: "Returns", icon: "↩️", component: ReturnsTab },
+  { id: "Repairs", label: "Repairs", icon: "🔧", component: RepairsTab },
+  { id: "Images", label: "Images", icon: "🖼️", component: ImagesTab },
 ];
 
 export const categoryOptions = ["Mobile", "Electronics", "Clothing", "Food", "Books", "Furniture"]
