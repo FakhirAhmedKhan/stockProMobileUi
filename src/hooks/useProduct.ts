@@ -1,13 +1,13 @@
+import { navigate } from '@/navigation/NavigationService'
 import {
+    createProduct,
     deleteProduct,
     GetAllProduct,
     getProduct,
 } from '@/services/ProductService'
-import { useNavigation } from '@react-navigation/native'
 import { useCallback, useEffect, useState } from 'react'
 
 const useProducts = (stockId?: string) => {
-    const navigation = useNavigation<any>()
 
     const [products, setProducts] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(false)
@@ -18,10 +18,22 @@ const useProducts = (stockId?: string) => {
     const [totalPages, setTotalPages] = useState(1)
     const [totalCount, setTotalCount] = useState(0)
 
+    const [formData, setFormData] = useState<any>({
+        name: '',
+        storage: '',
+        price: '',
+        barcode: '',
+        condition: '',
+        color: '',
+        category: '',
+    })
+    const [errors, setErrors] = useState<Record<string, string>>({})
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
     const fetchProducts = useCallback(async () => {
         setIsLoading(true)
         try {
-            const data = stockId
+            const data: any = stockId
                 ? await getProduct(stockId, 'All', pageNumber, pageSize, searchTerm)
                 : await GetAllProduct(pageNumber, pageSize, searchTerm)
 
@@ -47,7 +59,58 @@ const useProducts = (stockId?: string) => {
     }
 
     const handleViewDetails = (id: string) => {
-        navigation.navigate('ProductDetails', { id })
+        navigate('ProductDetails', { id })
+    }
+
+    const handleChange = (name: string, value: any) => {
+        setFormData((prev: any) => ({ ...prev, [name]: value }))
+        if (errors[name]) {
+            setErrors((prev) => {
+                const next = { ...prev }
+                delete next[name]
+                return next
+            })
+        }
+    }
+
+    const handleFormSubmit = async () => {
+        const newErrors: Record<string, string> = {}
+        if (!formData.name) newErrors.name = 'Product name is required'
+        if (!formData.price) newErrors.price = 'Price is required'
+        if (!formData.barcode) newErrors.barcode = 'Barcode is required'
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors)
+            return
+        }
+
+        setIsSubmitting(true)
+        try {
+            const payload = {
+                ...formData,
+                stockId: stockId,
+                price: parseFloat(formData.price),
+                status: 0
+            }
+            await createProduct(payload)
+            await fetchProducts()
+            setFormData({
+                name: '',
+                storage: '',
+                price: '',
+                barcode: '',
+                condition: '',
+                color: '',
+                category: '',
+            })
+            return true // Success
+        } catch (error) {
+            console.error('Save Product Error:', error)
+            setErrors({ submit: 'Failed to save product' })
+            return false
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const stats = {
@@ -72,6 +135,14 @@ const useProducts = (stockId?: string) => {
         handleDelete,
         handleViewDetails,
         stats,
+
+        // Form
+        formData,
+        errors,
+        isSubmitting,
+        handleChange,
+        handleFormSubmit,
+        fetchProducts,
     }
 }
 

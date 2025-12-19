@@ -1,26 +1,16 @@
 import { ShoppingCart } from "lucide-react-native";
 import { KeyboardAvoidingView, Modal, Platform, TouchableWithoutFeedback, View } from "react-native";
-import React from "react";
-import { ModelHeader } from "../ModelHeader";
+import { ProductFromInputs } from "../Forms/ProductFromInputs";
 import { ModelFooter } from "../ModelFooter";
-import { OderCreateModelInputs } from "../Forms/OrderFromInputs";
+import { ModelHeader } from "../ModelHeader";
 
-export default function OrderModel({
+export default function ProductModel({
   isOpen,
   onClose,
   handleFormSubmit,
-  stock,
   formData,
-  formErrors,
-  dataCache,
-  isFormLoading,
-  handleInputChange,
-  loadProductOptions,
-  loadCustomerOptions,
-  setFormData,
-  profit,
-  remaining,
-  margin,
+  handleChange,
+  errors,
   isSubmitting = false,
 }: any) {
   if (!isOpen) return null;
@@ -41,32 +31,22 @@ export default function OrderModel({
             <TouchableWithoutFeedback>
               <View className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg h-[85%] shadow-2xl flex flex-col overflow-hidden">
                 <ModelHeader
-                  title="Order Model"
+                  title="Product Model"
                   icon={<ShoppingCart size={24} color="#3B82F6" />}
                   onClose={onClose}
                 />
 
                 <View className="flex-1 w-full">
-                  <OderCreateModelInputs
-                    stock={stock}
-                    formData={formData}
-                    formErrors={formErrors}
-                    dataCache={dataCache}
-                    handleInputChange={handleInputChange}
-                    loadProductOptions={loadProductOptions}
-                    loadCustomerOptions={loadCustomerOptions}
-                    setFormData={setFormData}
-                    profit={profit}
-                    remaining={remaining}
-                    margin={margin}
+                  <ProductFromInputs
+                    formData={formData} handleChange={handleChange} errors={errors}
                   />
                 </View>
 
                 <ModelFooter
                   onClose={onClose}
                   handleSubmit={handleFormSubmit}
-                  title="Save Order"
-                  isSubmitting={isSubmitting || isFormLoading}
+                  title="Save Product"
+                  isSubmitting={isSubmitting}
                 />
               </View>
             </TouchableWithoutFeedback>

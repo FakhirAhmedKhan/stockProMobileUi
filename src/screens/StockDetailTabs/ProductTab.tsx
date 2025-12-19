@@ -1,10 +1,11 @@
-import { ActivityIndicator, Text, View } from 'react-native'
 import ExcelLikeTable from '@/components/ExcelLikeTable'
 import { MainHeader } from '@/components/MainHeader'
+import ProductModel from '@/components/Models/ProductModel'
 import { Pagination } from '@/components/Pagination'
 import SearchBar from '@/components/SearchBar'
 import useProducts from '@/hooks/useProduct'
 import { useState } from 'react'
+import { ActivityIndicator, Text, View } from 'react-native'
 
 export const ProductTab = ({ stockId }: { stockId: string }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,10 +21,21 @@ export const ProductTab = ({ stockId }: { stockId: string }) => {
         setPageSize,
         setPageNumber,
         handleDelete,
-        handleViewDetails,
+        handleFormSubmit,
+        formData,
+        handleChange,
+        errors,
+        isSubmitting,
     } = useProducts(stockId)
 
 
+
+    const onFormSubmit = async () => {
+        const success = await handleFormSubmit()
+        if (success) {
+            setIsModalOpen(false)
+        }
+    }
 
     return (
         <View>
@@ -60,7 +72,6 @@ export const ProductTab = ({ stockId }: { stockId: string }) => {
                         showButton={true}
                         showButtonNavigation={true}
                         showDelBtn={true}
-                        handleViewDetails={handleViewDetails}
                         handleDeleteStock={handleDelete}
                     />
                 )}
@@ -75,6 +86,18 @@ export const ProductTab = ({ stockId }: { stockId: string }) => {
                     text="Products per page"
                 />
             </View>
+
+            {isModalOpen && (
+                <ProductModel
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    handleFormSubmit={onFormSubmit}
+                    formData={formData}
+                    handleChange={handleChange}
+                    errors={errors}
+                    isSubmitting={isSubmitting}
+                />
+            )}
         </View>
     )
 }
